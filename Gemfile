@@ -7,14 +7,14 @@ git_source(:bc)     { |repo| "https://github.com/basecamp/#{repo}" }
 gem "rails", github: "rails/rails", branch: "main"
 
 # Drivers
-gem "sqlite3", "~> 1.4"
-gem "redis", "~> 4.0"
+gem "sqlite3", "~> 2.7"
+gem "redis", "~> 5.4"
 
 # Deployment
-gem "puma", "~> 6.4"
+gem "puma", "~> 6.6"
 
 # Jobs
-gem "resque", "~> 2.6.0"
+gem "resque", "~> 2.7.0"
 gem "resque-pool", "~> 0.7.1"
 
 # Assets

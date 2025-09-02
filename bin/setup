@@ -1,45 +1,32 @@
-#!/bin/bash
-set -eo pipefail
+#!/usr/bin/env ruby
+require "fileutils"
 
-app_root="$( cd "$(dirname "$0")/.."; pwd )"
-app_name=campfire
+APP_ROOT = File.expand_path("..", __dir__)
 
-# Use application binstubs
-export PATH="$app_root/bin:$PATH"
+def system!(*args)
+  system(*args, exception: true)
+end
 
-announce() {
-  echo
-  echo "--- $@"
-}
-
-if [ "$RAILS_ENV" == "production" ]
-then
-  echo "RAILS_ENV is production; bailing out"
+if ENV["RAILS_ENV"] == "production"
+  puts "RAILS_ENV is production; bailing out"
   exit
-fi
+end
 
-announce "Installing dependencies"
-mise install
-bundle install
+FileUtils.chdir APP_ROOT do
+  puts "== Installing dependencies =="
+  system "mise install"
+  system("bundle check") || system!("bundle install")
 
-announce "Preparing database"
-if [[ $* == *--reset* ]]; then
-  rm -rf ./storage/{db,files}
-  rails db:migrate:reset
-else
-  rails db:prepare
-fi
+  puts "\n== Preparing database =="
+  if ARGV.include?("--reset")
+    system "rm -rf ./storage/{db,files}"
+    system! "bin/rails db:reset"
+  end
+  system! "bin/rails db:prepare"
 
-announce "Cleaning up old logs, caches, and temporary files"
-rails log:clear tmp:clear
+  puts "\n== Removing old logs and tempfiles =="
+  system! "bin/rails log:clear tmp:clear"
 
-announce "Restarting services"
-rails restart
-
-if [ -d "$HOME/.puma-dev" ]; then
-  announce "Configuring puma-dev"
-  ln -nfs "$app_root" "$HOME/.puma-dev/$app_name"
-
-  announce "Checking that https://$app_name.test/up is live: "
-  curl -Is "https://$app_name.test/up" | head -n 1
-fi
+  puts "\n== Restarting services =="
+  system! "bin/rails restart"
+end

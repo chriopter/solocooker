@@ -7,14 +7,14 @@ class Messages::ByBotsControlleTest < ActionDispatch::IntegrationTest
 
   test "create" do
     assert_difference -> { Message.count }, +1 do
-      post room_bot_messages_url(@room, users(:bender).bot_key), params: "Hello Bot World!"
+      post room_bot_messages_url(@room, users(:bender).bot_key), params: +"Hello Bot World!"
       assert_equal "Hello Bot World!", Message.last.plain_text_body
     end
   end
 
   test "create with UTF-8 content" do
     assert_difference -> { Message.count }, +1 do
-      post room_bot_messages_url(@room, users(:bender).bot_key), params: "Hello 👋!"
+      post room_bot_messages_url(@room, users(:bender).bot_key), params: +"Hello 👋!"
       assert_equal "Hello 👋!", Message.last.plain_text_body
     end
   end
@@ -36,7 +36,7 @@ class Messages::ByBotsControlleTest < ActionDispatch::IntegrationTest
 
   test "create does not trigger a webhook to the sending bot in a direct room" do
     assert_no_enqueued_jobs only: Bot::WebhookJob do
-      post room_bot_messages_url(rooms(:bender_and_kevin), users(:bender).bot_key), params: "Talking to myself again!"
+      post room_bot_messages_url(rooms(:bender_and_kevin), users(:bender).bot_key), params: +"Talking to myself again!"
     end
   end
 

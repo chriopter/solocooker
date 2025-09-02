@@ -3,13 +3,13 @@
     {
       "warning_type": "Dynamic Render Path",
       "warning_code": 15,
-      "fingerprint": "3ba57fe811dd7154100cbd8ca7a262c5a316d50d0d44b877fec8dbfdf710cdd0",
+      "fingerprint": "58c19ad06ce51511be9d6d9e5828f4a0ed96ab52c963ff37b4b4a606620ab66b",
       "check_name": "Render",
       "message": "Render path contains parameter value",
       "file": "app/views/messages/show.html.erb",
       "line": 1,
       "link": "https://brakemanscanner.org/docs/warning_types/dynamic_render_path/",
-      "code": "render(action => @room.messages.find(params[:id]), {})",
+      "code": "render(action => @room.messages.find(params[:id]), { :locals => ({ :brakemanunresolvedmodel => @room.messages.find(params[:id]) }) })",
       "render_path": [
         {
           "type": "controller",
@@ -33,31 +33,7 @@
         22
       ],
       "note": ""
-    },
-    {
-      "warning_type": "File Access",
-      "warning_code": 16,
-      "fingerprint": "64b6a0c35632fbde1eaa8c5441b070fec379a983ac91997b5b48177d6d36b024",
-      "check_name": "SendFile",
-      "message": "Model attribute used in file name",
-      "file": "app/controllers/users/avatars_controller.rb",
-      "line": 14,
-      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
-      "code": "send_file(ActiveStorage::Blob.service.path_for(User.find(params[:user_id]).avatar.variant(:resize_to_limit => ([512, 512]), :format => :webp).processed.key), :content_type => \"image/webp\", :disposition => :inline)",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "Users::AvatarsController",
-        "method": "show"
-      },
-      "user_input": "User.find(params[:user_id]).avatar",
-      "confidence": "Weak",
-      "cwe_id": [
-        22
-      ],
-      "note": ""
     }
   ],
-  "updated": "2024-01-18 16:36:00 -0800",
-  "brakeman_version": "6.1.1"
+  "brakeman_version": "7.1.0"
 }

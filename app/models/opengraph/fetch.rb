@@ -53,12 +53,12 @@ class Opengraph::Fetch
       # the body of any large responses. But that header could be wrong or
       # missing. To be on the safe side, we'll read the body in chunks, and bail
       # if it runs over our size limit.
-      "".tap do |body|
+      StringIO.new.tap do |body|
         response.read_body do |chunk|
-          return nil if body.bytesize + chunk.bytesize > MAX_BODY_SIZE
+          return nil if body.string.bytesize + chunk.bytesize > MAX_BODY_SIZE
           body << chunk
         end
-      end
+      end.string
     end
 
     def response_valid?(response)
