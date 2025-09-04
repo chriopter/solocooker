@@ -45,6 +45,13 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
+# Image metadata
+LABEL org.opencontainers.image.description="Campfire is a web-based chat application with multiple rooms, direct messages, file attachments with previews, search, web push notifications, @mentions, and bot integrations. Single-tenant; production-ready image with web app, background jobs, caching, file serving, and SSL."
+ARG OCI_SOURCE
+ARG OCI_LICENSE
+LABEL org.opencontainers.image.source=${OCI_SOURCE}
+LABEL org.opencontainers.image.licenses=${OCI_LICENSE}
+
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
