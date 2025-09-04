@@ -167,9 +167,13 @@ jobs:
           while IFS= read -r tag; do
             [ -z "$tag" ] && continue
             echo "Creating manifest for $tag"
+            ANNOTATION_ARG=""
+            if [ -n "${IMAGE_DESCRIPTION:-}" ]; then
+              ANNOTATION_ARG="--annotation index:org.opencontainers.image.description=${IMAGE_DESCRIPTION}"
+            fi
             docker buildx imagetools create \
               --tag "$tag" \
-              --annotation "org.opencontainers.image.description=${IMAGE_DESCRIPTION}" \
+              $ANNOTATION_ARG \
               "${tag}-amd64" \
               "${tag}-arm64"
           done <<< "$tags"
