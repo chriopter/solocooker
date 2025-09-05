@@ -22,7 +22,6 @@ permissions:
   attestations: write
 
 env:
-  # Static metadata; safe for forks
   IMAGE_DESCRIPTION: Campfire is a web-based chat application with multiple rooms, direct messages, file attachments with previews, search, web push notifications, @mentions, and bot integrations. Single-tenant; production-ready image with web app, background jobs, caching, file serving, and SSL.
   SOURCE_URL: https://github.com/${{ github.repository }}
 
@@ -93,6 +92,7 @@ jobs:
           file: Dockerfile
           build-args: |
             OCI_SOURCE=${{ env.SOURCE_URL }}
+            OCI_DESCRIPTION=${{ env.IMAGE_DESCRIPTION }}
           platforms: ${{ matrix.platform }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
