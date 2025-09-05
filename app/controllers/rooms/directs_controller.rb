@@ -1,4 +1,5 @@
 class Rooms::DirectsController < RoomsController
+  before_action :set_room, only: %i[ edit ]
   def new
     @room = Rooms::Direct.new
   end
