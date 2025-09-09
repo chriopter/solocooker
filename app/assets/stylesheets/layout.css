@@ -1,5 +1,6 @@
 html {
   overscroll-behavior: none;
+  overflow-x: hidden; /* Prevent horizontal scroll when sidebar is off-screen */
 }
 
 body {
@@ -14,12 +15,21 @@ body {
   grid-template-columns: 1fr var(--sidebar-width);
   grid-template-rows: min-content 1fr;
   max-block-size: 100dvh;
+  transition: grid-template-columns 300ms ease; /* Animate grid when sidebar collapses */
 
   &.sidebar {
     @media (min-width: 100ch) {
       --sidebar-width: 26vw;
     }
   }
+  
+  /* Collapse grid column when sidebar is closed on desktop */
+  &.sidebar:has(#sidebar:not(.open)) {
+    @media (min-width: 100ch) {
+      --sidebar-width: 0;
+    }
+  }
+  
 }
 
 #app-logo {
@@ -91,13 +101,24 @@ body {
       position: fixed;
       transform: translate(100%);
     }
+    
+    /* Apply same slide behavior to desktop */
+    @media (min-width: 100ch) {
+      transform: translate(100%);
+    }
   }
 
   &.open {
     @media (max-width: 100ch) {
       transform: translate(0);
     }
+    
+    @media (min-width: 100ch) {
+      transform: translate(0);
+    }
   }
+
+  
 }
 
 #footer {
