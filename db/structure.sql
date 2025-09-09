@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS 'message_search_index_config'(k PRIMARY KEY, v) WITHO
 CREATE TABLE IF NOT EXISTS "accounts" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "join_code" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "custom_styles" text);
 CREATE TABLE IF NOT EXISTS "action_text_rich_texts" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "body" text, "record_type" varchar NOT NULL, "record_id" bigint NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL);
 CREATE UNIQUE INDEX "index_action_text_rich_texts_uniqueness" ON "action_text_rich_texts" ("record_type", "record_id", "name");
-CREATE TABLE IF NOT EXISTS "messages" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "room_id" integer NOT NULL, "creator_id" integer NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "client_message_id" varchar NOT NULL, CONSTRAINT "fk_rails_761a2f12b3"
+CREATE TABLE IF NOT EXISTS "messages" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "room_id" integer NOT NULL, "creator_id" integer NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "client_message_id" varchar NOT NULL, "todo_state" integer DEFAULT NULL /*application='Campfire'*/, CONSTRAINT "fk_rails_761a2f12b3"
 FOREIGN KEY ("creator_id")
   REFERENCES "users" ("id")
 , CONSTRAINT "fk_rails_a8db0fb63a"
@@ -69,7 +69,9 @@ CREATE UNIQUE INDEX "index_users_on_email_address" ON "users" ("email_address");
 CREATE UNIQUE INDEX "index_users_on_bot_token" ON "users" ("bot_token");
 CREATE TABLE IF NOT EXISTS "active_storage_blobs" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "key" varchar NOT NULL, "filename" varchar NOT NULL, "content_type" varchar, "metadata" text, "service_name" varchar NOT NULL, "byte_size" bigint NOT NULL, "checksum" varchar, "created_at" datetime(6) NOT NULL);
 CREATE UNIQUE INDEX "index_active_storage_blobs_on_key" ON "active_storage_blobs" ("key") /*application='Campfire'*/;
+CREATE INDEX "index_messages_on_todo_state" ON "messages" ("todo_state") /*application='Campfire'*/;
 INSERT INTO "schema_migrations" (version) VALUES
+('20250909150807'),
 ('20250825100959'),
 ('20250825100958'),
 ('20250825100957'),
