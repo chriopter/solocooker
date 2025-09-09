@@ -599,11 +599,8 @@ img.message__attachment {
 
 /* Todo message styles */
 .message--todo-checked {
-  .message__body-content {
-    opacity: 0.5;
-  }
-  
   .trix-content {
+    opacity: 0.5;
     text-decoration: line-through;
   }
   
