@@ -11,22 +11,19 @@
     <turbo-frame id="<%= dom_id(message, :edit) %>">
       <div class="message__body">
         <div class="message__body-content">
+          <%= link_to toggle_todo_room_message_path(message.room, message), method: :patch,
+              class: "message__todo-btn #{"message__todo-btn--unchecked" if message.todo_state == 0} #{"message__todo-btn--checked" if message.todo_state == 1}",
+              data: { turbo_method: :patch, controller: "todo", action: "click->todo#click" } do %>
+            <span class="for-screen-reader">Toggle todo</span>
+          <% end %>
           <div class="message__meta">
-            <h3 class="message__heading">
-              <span class="message__author" title="<%= message.creator.title %>">
-                <strong data-reply-target="author"><%= message.creator.name %></strong>
-              </span>
-              <%= link_to message_timestamp(message, class: "message__timestamp"), room_at_message_path(message.room, message), target: "_top",
-                    class: "message__permalink" %>
-              <span class="message__room">
-                <%= link_to room_display_name(message.room, for_user: nil), room_at_message_path(message.room, message), target: "_top", data: { reply_target: "link" } %>
-              </span>
-            </h3>
             <%= render "messages/actions", message: message, url: room_at_message_url(message.room, message) %>
           </div>
           <%= render "messages/presentation", message: message %>
           <%= render "messages/boosts/boosts", message: message %>
         </div>
+        <%= link_to message_timestamp(message, class: "message__timestamp"), room_at_message_path(message.room, message), target: "_top",
+              class: "message__timestamp-outside" %>
       </div>
     </turbo-frame>
   <% end %>
