@@ -1,2 +1,19 @@
-#!/usr/bin/env ruby
-exec "./bin/rails", "server", *ARGV
+#!/usr/bin/env bash
+
+# Ensure mise environment is loaded
+eval "$(mise activate bash)"
+
+# Check if Redis is available via mise
+if ! command -v redis-server &> /dev/null; then
+  echo "Redis is not available. Installing via mise..."
+  mise use redis@latest
+fi
+
+# Check if foreman is installed
+if ! command -v foreman &> /dev/null; then
+  echo "Foreman is not installed. Installing..."
+  gem install foreman
+fi
+
+# Start Rails and Redis using foreman with the development Procfile
+exec foreman start -f Procfile.dev
