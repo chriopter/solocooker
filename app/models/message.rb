@@ -35,4 +35,16 @@ class Message < ApplicationRecord
       Sound.find_by_name match[:name]
     end
   end
+
+  def toggle_todo!
+    update!(todo_state: todo_state.nil? ? 0 : todo_state == 0 ? 1 : nil)
+  end
+  
+  def todo?
+    todo_state.present?
+  end
+  
+  def todo_checked?
+    todo_state == 1
+  end
 end

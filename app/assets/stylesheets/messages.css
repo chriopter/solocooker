@@ -98,8 +98,10 @@
   padding-inline: calc(var(--inline-space) + 1vw);
   position: relative;
   row-gap: var(--message-row-gap);
+  padding-block-end: 0.2rem;
   visibility: hidden;
   z-index: 0;
+  
 
   .message__boost-inline {
     display: none;
@@ -258,15 +260,10 @@
 }
 
 .message__body {
-  column-gap: var(--inline-space-half);
-  display: flex;
   grid-area: body;
+  inline-size: fit-content;
   max-inline-size: min(80ch, 85%);
   position: relative;
-
-  .message--me & {
-    flex-direction: row-reverse;
-  }
 
   @media (max-width: 100ch) {
     max-inline-size: 100%;
@@ -282,6 +279,7 @@
   margin-block-end: var(--message-row-gap);
   max-inline-size: 100%;
   padding: var(--content-padding-block) var(--content-padding-inline);
+  padding-inline-start: calc(var(--content-padding-inline) + 4.7ch);
   position: relative;
   word-break: break-word;
 
@@ -481,6 +479,11 @@ img.message__attachment {
   :is(.message__body, .message__meta, .message__heading) {
     justify-self: end;
   }
+  
+  .message__body-content {
+    background-color: #e3f2fd;
+    border-color: #90caf9;
+  }
 
   :is(.message__meta, .message__heading) {
     flex-direction: row-reverse;
@@ -591,5 +594,146 @@ img.message__attachment {
     aspect-ratio: 1;
     background-size: contain;
     inline-size: 1.4em;
+  }
+}
+
+/* Todo message styles */
+.message--todo-checked {
+  .message__body-content {
+    opacity: 0.5;
+  }
+  
+  .trix-content {
+    text-decoration: line-through;
+  }
+  
+  /* Keep the todo button solid (not affected by message opacity) */
+  .message__todo-btn--checked {
+    opacity: 1 !important;
+  }
+}
+
+/* Todo checkbox button */
+.message__todo-btn {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 0.75rem;
+  transform: translateY(-50%);
+  block-size: 2.5ch;
+  inline-size: 2.5ch;
+  border-radius: 50%;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-darker);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 150ms, transform 100ms;
+  text-decoration: none;
+  
+  /* Always visible when todo state is set */
+  &.message__todo-btn--unchecked,
+  &.message__todo-btn--checked {
+    opacity: 1;
+  }
+  
+  /* Show on hover for messages without todo */
+  .message:hover & {
+    opacity: 0.5;
+  }
+  
+  .message:hover &.message__todo-btn--unchecked,
+  .message:hover &.message__todo-btn--checked {
+    opacity: 1;
+  }
+  
+  &:hover {
+    opacity: 1 !important;
+    transform: translateY(-50%) scale(1.1);
+  }
+  
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+  
+  /* Checked state - green with checkmark */
+  &.message__todo-btn--checked {
+    background: #16a34a;
+    border-color: #16a34a;
+    
+    &::after {
+      content: "✓";
+      color: white;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    
+    /* On hover, fade to show removal */
+    &:hover {
+      opacity: 0.5;
+    }
+  }
+  
+  /* Unchecked - show ghost checkmark on hover */
+  &.message__todo-btn--unchecked {
+    /* Show preview of checked state on hover */
+    &:hover {
+      background: #16a34a;
+      border-color: #16a34a;
+      
+      &::after {
+        content: "✓";
+        color: white;
+        font-size: 1.2em;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+@keyframes popIn {
+  0% {
+    transform: translateY(-50%) scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(-50%) scale(1.2);
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.message__timestamp-outside {
+  position: absolute;
+  inset-block-start: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  margin-left: 0.4rem;
+  color: var(--color-text-lighter);
+  font-size: 0.75rem;
+  opacity: 0;
+  transition: opacity 150ms;
+  text-decoration: none;
+  white-space: nowrap;
+  
+  .message:hover & {
+    opacity: 0.6;
+  }
+  
+  &:hover {
+    opacity: 1 !important;
+    color: var(--color-text);
+  }
+  
+  /* Move down when avatar is present (first message) */
+  .message:not(.message--threaded) & {
+    inset-block-start: 85%;
+  }
+  
+  /* For me messages, keep it on the right side too */
+  .message--me & {
+    /* Same as default - on the right */
   }
 }

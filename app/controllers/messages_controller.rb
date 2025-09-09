@@ -2,7 +2,7 @@ class MessagesController < ApplicationController
   include ActiveStorage::SetCurrent, RoomScoped
 
   before_action :set_room, except: :create
-  before_action :set_message, only: %i[ show edit update destroy ]
+  before_action :set_message, only: %i[ show edit update destroy toggle_todo ]
   before_action :ensure_can_administer, only: %i[ edit update destroy ]
 
   layout false, only: :index
@@ -43,6 +43,15 @@ class MessagesController < ApplicationController
   def destroy
     @message.destroy
     @message.broadcast_remove_to @room, :messages
+  end
+  
+  def toggle_todo
+    @message.toggle_todo!
+    
+    respond_to do |format|
+      format.turbo_stream { head :ok }
+      format.html { redirect_back(fallback_location: room_path(@room)) }
+    end
   end
 
   private
