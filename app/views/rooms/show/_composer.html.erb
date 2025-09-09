@@ -5,6 +5,11 @@
       <%= image_tag "search.svg", size: 20, aria: { hidden: "true" } %>
       <span class="for-screen-reader">Search</span>
     <% end %>
+    
+    <%= link_to "#", class: "btn flex-item-no-shrink margin-block-end composer__context-btn" do %>
+      <span>♻️</span>
+      <span class="for-screen-reader">Recycle emoji</span>
+    <% end %>
 
     <turbo-frame id="composer-frame">
       <%= composer_form_tag(room) do |form| %>
