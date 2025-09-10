@@ -51,3 +51,7 @@ For example:
       --env VAPID_PRIVATE_KEY=$YOUR_PRIVATE_KEY \
       --env SSL_DOMAIN=chat.example.com \
       campfire
+
+
+## Additions by chriopter
+- Added config/deploy.yml and bin/deploy to deploy directly with 1PW Secrets / environment variables
