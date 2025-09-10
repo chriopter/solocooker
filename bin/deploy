@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -e
+
+# Check 1Password
+op whoami &>/dev/null || {
+  echo "Not signed into 1Password (run: op signin)"
+  exit 1
+}
+
+# Find and select environment
+items=$(op item list --format json | jq -r '.[] | select(.title | startswith("Solocooker Secrets")) | .title' | sort)
+[ -z "$items" ] && {
+  echo "No Solocooker Secrets items found"
+  exit 1
+}
+
+echo "Select environment:"
+echo "$items" | nl -w2 -s') '
+read -p "Choice: " choice
+selected=$(echo "$items" | sed -n "${choice}p")
+[ -z "$selected" ] && {
+  echo "Invalid selection"
+  exit 1
+}
+
+# Load all secrets
+echo -e "\nLoading: $selected\n"
+
+# Define required secrets (1Password field : Environment variable)
+secrets=(
+  "deploy_ip:DEPLOY_IP"
+  "deploy_host:DEPLOY_HOST"
+  "secret_key_base:SECRET_KEY_BASE"
+  "github_token:KAMAL_REGISTRY_PASSWORD"
+  "github_user:GITHUB_USER"
+  "vapid_public_key:VAPID_PUBLIC_KEY"
+  "vapid_private_key:VAPID_PRIVATE_KEY"
+)
+
+# Load each secret
+for secret in "${secrets[@]}"; do
+  field="${secret%:*}" # Part before colon
+  var="${secret#*:}"   # Part after colon
+
+  if value=$(op read "op://Private/$selected/$field" 2>/dev/null) && [ -n "$value" ]; then
+    export $var="$value"
+    echo "✅ $field"
+  else
+    echo "❌ $field missing"
+    exit 1
+  fi
+done
+
+# SSL choice
+echo -e "\nEnable SSL? (n if using external reverse proxy)"
+read -p "(y/n): " ssl && export SSL_ENABLED=$([[ "$ssl" =~ ^[Yy]$ ]] && echo "true" || echo "false")
+
+echo -e "\nDeploying to $DEPLOY_HOST ($DEPLOY_IP)"
+
+# Default to deploy if no arguments
+if [ $# -eq 0 ]; then
+  exec bin/kamal deploy
+else
+  exec bin/kamal "$@"
+fi
+

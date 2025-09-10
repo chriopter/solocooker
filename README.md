@@ -55,3 +55,4 @@ For example:
 
 ## Additions by chriopter
 - Added config/deploy.yml and bin/deploy to deploy directly with 1PW Secrets / environment variables
+- Create a 1Password item named "Solocooker Secrets [Environment]" with fields: deploy_ip, deploy_host, secret_key_base, github_token, github_user, vapid_public_key, vapid_private_key

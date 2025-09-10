@@ -1,0 +1,93 @@
+# Name of your application. Used to uniquely configure containers.
+service: campfire
+
+# Name of the container image.
+image: <%= ENV['GITHUB_USER'] %>/campfire
+
+# Deploy to these servers.
+servers:
+  web:
+    - <%= ENV['DEPLOY_IP'] %>
+  # job:
+  #   hosts:
+  #     - <%= ENV['DEPLOY_IP'] %>
+  #   cmd: bin/jobs
+
+# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
+# Remove this section when using multiple web servers and ensure you terminate SSL at your load balancer.
+#
+# Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
+proxy:
+  ssl: <%= ENV['SSL_ENABLED'] == 'true' %>
+  host: <%= ENV['DEPLOY_HOST'] %>
+  # Proxy connects to your container on port 80 by default.
+  # app_port: 3000
+
+# Credentials for your image host.
+registry:
+  # Using GitHub Container Registry
+  server: ghcr.io
+  username: <%= ENV['GITHUB_USER'] %>
+
+  # Always use an access token rather than real password (pulled from .kamal/secrets).
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+# Configure builder setup.
+builder:
+  arch: amd64
+  # Pass in additional build args needed for your Dockerfile.
+  # args:
+  #   RUBY_VERSION: <%= ENV["RBENV_VERSION"] || ENV["rvm_ruby_string"] || "#{RUBY_ENGINE}-#{RUBY_ENGINE_VERSION}" %>
+
+# Inject ENV variables into containers (secrets come from .kamal/secrets).
+env:
+  clear:
+    # Redis connection for Resque background jobs
+    REDIS_URL: redis://redis:6379/0
+    # Rails settings
+    RAILS_LOG_TO_STDOUT: true
+    RAILS_SERVE_STATIC_FILES: true
+    # Secrets from environment (via bin/deploy)
+    SECRET_KEY_BASE: <%= ENV['SECRET_KEY_BASE'] %>
+    VAPID_PUBLIC_KEY: <%= ENV['VAPID_PUBLIC_KEY'] %>
+    VAPID_PRIVATE_KEY: <%= ENV['VAPID_PRIVATE_KEY'] %>
+  secret:
+    - KAMAL_REGISTRY_PASSWORD
+
+# Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
+# "bin/kamal app logs -r job" will tail logs from the first server in the job section.
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole"
+
+# Use a different ssh user than root
+#
+# ssh:
+#   user: app
+
+# Use a persistent storage volume for SQLite database and Active Storage files.
+volumes:
+  - "campfire_storage:/rails/storage"
+
+# Bridge fingerprinted assets, like JS and CSS, between versions to avoid
+# hitting 404 on in-flight requests. Combines all files from new and old
+# version inside the asset_path.
+asset_path: /rails/public/assets
+
+# Configure rolling deploys by setting a wait time between batches of restarts.
+#
+# boot:
+#   limit: 10 # Can also specify as a percentage of total hosts, such as "25%"
+#   wait: 2
+
+# Use accessory services (secrets come from .kamal/secrets).
+accessories:
+  redis:
+    image: redis:7-alpine
+    host: <%= ENV['DEPLOY_IP'] %>
+    port: 6379
+    directories:
+      - redis_data:/data
