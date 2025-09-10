@@ -279,7 +279,7 @@
   margin-block-end: var(--message-row-gap);
   max-inline-size: 100%;
   padding: var(--content-padding-block) var(--content-padding-inline);
-  padding-inline-start: calc(var(--content-padding-inline) + 4.7ch);
+  padding-inline-end: calc(var(--content-padding-inline) + 4.7ch);
   position: relative;
   word-break: break-word;
 
@@ -501,6 +501,17 @@ img.message__attachment {
       inset-inline-start: auto;
     }
   }
+  
+  /* Mirror todo button for user's own messages */
+  .message__todo-btn {
+    inset-inline-end: auto;
+    inset-inline-start: 0.75rem;
+  }
+  
+  .message__body-content {
+    padding-inline-end: var(--content-padding-inline);
+    padding-inline-start: calc(var(--content-padding-inline) + 4.7ch);
+  }
 }
 
 .message--mentioned {
@@ -609,7 +620,8 @@ img.message__attachment {
 .message__todo-btn {
   position: absolute;
   inset-block-start: 50%;
-  inset-inline-start: 0.75rem;
+  inset-inline-end: 0.75rem;
+  inset-inline-start: auto;
   transform: translateY(-50%);
   block-size: 2.5ch;
   inline-size: 2.5ch;
