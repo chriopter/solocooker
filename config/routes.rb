@@ -59,6 +59,10 @@ Rails.application.routes.draw do
   end
 
   resources :rooms do
+    member do
+      delete :delete_completed_todos
+    end
+    
     resources :messages do
       member do
         patch :toggle_todo

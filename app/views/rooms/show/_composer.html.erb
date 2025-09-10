@@ -6,10 +6,14 @@
       <span class="for-screen-reader">Search</span>
     <% end %>
     
-    <%= link_to "#", class: "btn flex-item-no-shrink margin-block-end composer__context-btn" do %>
+    <button type="button" 
+            class="btn flex-item-no-shrink margin-block-end composer__context-btn"
+            data-controller="recycle"
+            data-recycle-room-id="<%= room.id %>"
+            data-action="click->recycle#deleteCompletedTodos">
       <span>♻️</span>
-      <span class="for-screen-reader">Recycle emoji</span>
-    <% end %>
+      <span class="for-screen-reader">Delete completed todos</span>
+    </button>
 
     <turbo-frame id="composer-frame">
       <%= composer_form_tag(room) do |form| %>
