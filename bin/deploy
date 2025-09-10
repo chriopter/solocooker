@@ -23,7 +23,11 @@ selected=$(echo "$items" | sed -n "${choice}p")
   exit 1
 }
 
-# Load all secrets
+# SSL choice first (before loading secrets)
+echo -e "\nEnable SSL? (n if using external reverse proxy)"
+read -p "(y/n): " ssl && export SSL_ENABLED=$([[ "$ssl" =~ ^[Yy]$ ]] && echo "true" || echo "false")
+
+# Load all secrets last
 echo -e "\nLoading: $selected\n"
 
 # Define required secrets (1Password field : Environment variable)
@@ -50,10 +54,6 @@ for secret in "${secrets[@]}"; do
     exit 1
   fi
 done
-
-# SSL choice
-echo -e "\nEnable SSL? (n if using external reverse proxy)"
-read -p "(y/n): " ssl && export SSL_ENABLED=$([[ "$ssl" =~ ^[Yy]$ ]] && echo "true" || echo "false")
 
 echo -e "\nDeploying to $DEPLOY_HOST ($DEPLOY_IP)"
 
