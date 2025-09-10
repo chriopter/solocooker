@@ -1,5 +1,5 @@
 class RoomsController < ApplicationController
-  before_action :set_room, only: %i[ show destroy ]
+  before_action :set_room, only: %i[ show destroy delete_completed_todos ]
   before_action :ensure_can_administer, only: %i[ destroy ]
   before_action :remember_last_room_visited, only: :show
 
@@ -16,6 +16,34 @@ class RoomsController < ApplicationController
 
     broadcast_remove_room
     redirect_to root_url
+  end
+
+  def delete_completed_todos
+    completed_todos = @room.messages.where(todo_state: 1)
+    
+    # Filter to only messages the user can administer
+    deletable_messages = completed_todos.select { |message| Current.user.can_administer?(message) }
+    
+    if deletable_messages.any?
+      # Delete and broadcast removal for each message
+      deletable_messages.each do |message|
+        message.destroy
+        message.broadcast_remove_to @room, :messages
+      end
+      
+      respond_to do |format|
+        format.turbo_stream { head :ok }
+        format.html { redirect_back(fallback_location: room_path(@room)) }
+      end
+    else
+      respond_to do |format|
+        format.turbo_stream { head :no_content }
+        format.html { 
+          redirect_back(fallback_location: room_path(@room), 
+                       alert: "No completed todos to delete or you don't have permission") 
+        }
+      end
+    end
   end
 
   private
