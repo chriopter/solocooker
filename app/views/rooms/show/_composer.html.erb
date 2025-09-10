@@ -10,9 +10,9 @@
             class="btn flex-item-no-shrink margin-block-end composer__context-btn"
             data-controller="recycle"
             data-recycle-room-id="<%= room.id %>"
-            data-action="click->recycle#deleteCompletedTodos">
+            data-action="click->recycle#handleClick mousedown->recycle#startHold touchstart->recycle#startHold mouseup->recycle#cancelHold touchend->recycle#cancelHold mouseleave->recycle#cancelHold">
       <span>♻️</span>
-      <span class="for-screen-reader">Delete completed todos</span>
+      <span class="for-screen-reader">Hold to recycle</span>
     </button>
 
     <turbo-frame id="composer-frame">
