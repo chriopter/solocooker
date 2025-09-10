@@ -23,7 +23,7 @@
         <% if members.many? %>
           <%= members.map { |member| member.name.split(' ')[0, 3].map { |str| str[0].capitalize }.join }.to_sentence(two_words_connector: '+') %>
         <% else %>
-          <%= members.first.name.split(' ')[0] %>
+          <%= members.first == membership.user ? "Me" : members.first.name.split(' ')[0] %>
         <% end %>
       </span>
     </span>

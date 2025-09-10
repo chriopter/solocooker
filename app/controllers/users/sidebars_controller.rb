@@ -15,8 +15,10 @@ class Users::SidebarsController < ApplicationController
     end
 
     def find_direct_placeholder_users
-      exclude_user_ids = user_ids_already_in_direct_rooms_with_current_user.including(Current.user.id)
-      User.active.where.not(id: exclude_user_ids).order(:created_at).limit(DIRECT_PLACEHOLDERS - exclude_user_ids.count)
+      exclude_user_ids = user_ids_already_in_direct_rooms_with_current_user
+      users = User.active.where.not(id: exclude_user_ids).order(:created_at).limit(DIRECT_PLACEHOLDERS).to_a
+      # Move current user to first position if present
+      users.partition { |u| u.id == Current.user.id }.flatten
     end
 
     def user_ids_already_in_direct_rooms_with_current_user

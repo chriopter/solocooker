@@ -40,7 +40,7 @@ export default class extends BaseAutocompleteHandler {
   }
 
   #filterSelectedAutocompletables(autocompletables) {
-    const selectedValues = this.#selection.values.concat(Current.user.id)
+    const selectedValues = this.#selection.values
     return autocompletables.filter(autocompletable => !selectedValues.includes(autocompletable.value))
   }
 }
