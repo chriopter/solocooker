@@ -223,6 +223,12 @@
   }
 
   .message__actions {
+    /* Move three dots outside bubble on all screen sizes */
+    inset-block-start: 50%;
+    inset-inline-start: calc(100% + var(--message-column-gap) / 2);
+    position: absolute;
+    transform: translate(0, -50%);
+    
     @media (max-width: 100ch) {
       .message__options-btn {
         --btn-padding: 0 0.5em;
@@ -233,12 +239,14 @@
       }
     }
 
+    /* Old code - only positioned outside on desktop
     @media (min-width: 100ch) {
       inset-block-start: 50%;
       inset-inline-start: calc(100% + var(--message-column-gap) / 2);
       position: absolute;
       transform: translate(0, -50%);
     }
+    */
   }
 }
 
@@ -495,11 +503,16 @@ img.message__attachment {
 
   .message__actions {
     justify-content: end;
-
+    /* Move three dots to left side for user's own messages */
+    inset-inline-end: calc(100% + var(--message-column-gap) / 2);
+    inset-inline-start: auto;
+    
+    /* Old code - only positioned outside on desktop
     @media (min-width: 100ch) {
       inset-inline-end: calc(100% + var(--message-column-gap) / 2);
       inset-inline-start: auto;
     }
+    */
   }
   
   /* Mirror todo button for user's own messages */
