@@ -736,6 +736,7 @@ img.message__attachment {
   }
 }
 
+/* Timestamp outside bubble - commented out for now
 .message__timestamp-outside {
   position: absolute;
   inset-block-start: 50%;
@@ -768,3 +769,4 @@ img.message__attachment {
     /* Same as default - on the right */
   }
 }
+*/
