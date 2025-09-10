@@ -12,6 +12,7 @@ gem "redis", "~> 5.4"
 
 # Deployment
 gem "puma", "~> 6.6"
+gem "kamal", require: false
 
 # Jobs
 gem "resque", "~> 2.7.0"
