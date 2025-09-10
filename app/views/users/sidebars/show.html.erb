@@ -30,8 +30,12 @@
     </turbo-frame>
 
     <div class="rooms position-relative flex flex-column gap">
-      <div id="shared_rooms" contents data-controller="sorted-list">
-        <% @other_memberships.each do |membership| %>
+      <div id="shared_rooms" contents>
+        <% @shared_memberships.each do |membership| %>
+          <%= render "users/sidebars/rooms/shared", room: membership.room, unread: membership.unread?, shared: true %>
+        <% end %>
+        
+        <% @solo_memberships.each do |membership| %>
           <%= render "users/sidebars/rooms/shared", room: membership.room, unread: membership.unread? %>
         <% end %>
       </div>
