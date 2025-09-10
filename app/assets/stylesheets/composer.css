@@ -20,19 +20,50 @@
 
 /* Make context buttons perfectly circular */
 .composer__context-btn {
-  aspect-ratio: 1;
   width: 2.65em;
   height: 2.65em;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 1.3rem;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  white-space: nowrap;
   
   /* Make emoji bigger */
   span:not(.for-screen-reader) {
     font-size: 1.3em;
+    display: inline-block; /* Needed for transform to work */
   }
+}
+
+/* Recycle button active state */
+.composer__context-btn.recycle-active {
+  width: 7em;
+  padding: 0 1em;
+  background: rgba(34, 197, 94, 0.1);
+  animation: pulse-green 1s infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% { 
+    background: rgba(34, 197, 94, 0.1);
+  }
+  50% { 
+    background: rgba(34, 197, 94, 0.2);
+  }
+}
+
+@keyframes error-shake {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+@keyframes success-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
 }
 
 /* Attachments */
