@@ -1,17 +1,20 @@
 <% content_for :footer do %>
   <div class="composer flex align-end gap position-relative"
       data-controller="typing-notifications" data-typing-notifications-active-class="typing-indicator--active">
-    <%= link_to searches_path, class: "btn flex-item-no-shrink margin-block-end composer__context-btn", style: "view-transition-name: input-switcher" do %>
+    <%= link_to searches_path, class: "btn flex-item-no-shrink margin-block-end composer__context-btn search-btn", style: "view-transition-name: input-switcher" do %>
       <%= image_tag "search.svg", size: 20, aria: { hidden: "true" } %>
       <span class="for-screen-reader">Search</span>
     <% end %>
     
     <button type="button" 
-            class="btn flex-item-no-shrink margin-block-end composer__context-btn"
+            class="btn flex-item-no-shrink margin-block-end composer__context-btn recycle-btn"
             data-controller="recycle"
             data-recycle-room-id="<%= room.id %>"
             data-action="click->recycle#handleClick mousedown->recycle#handleMouseDown mouseup->recycle#handleMouseUp mouseleave->recycle#handleMouseLeave touchstart->recycle#handleTouchStart touchend->recycle#handleTouchEnd touchcancel->recycle#cancelHold">
-      <span>♻️</span>
+      <div class="recycle-sections">
+        <span class="recycle-left">♻️</span>
+        <span class="recycle-right">🗑️</span>
+      </div>
       <span class="for-screen-reader">Hold to recycle</span>
     </button>
 

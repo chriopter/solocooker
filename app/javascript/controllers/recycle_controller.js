@@ -62,30 +62,30 @@ export default class extends Controller {
   }
   
   async quickDelete() {
-    const span = this.element.querySelector("span:first-child")
+    const leftSpan = this.element.querySelector(".recycle-left")
     const response = await this.delete("/delete_completed_todos")
     
     // Animate based on result
-    span.style.animation = response.status === 204 
+    leftSpan.style.animation = response.status === 204 
       ? "error-shake 0.2s ease" 
       : "success-bounce 0.4s ease"
     
-    setTimeout(() => span.style.animation = "", 400)
+    setTimeout(() => leftSpan.style.animation = "", 400)
   }
   
   startHoldCountdown() {
     this.isHolding = true
     const button = this.element
-    const span = button.querySelector("span:first-child")
+    const leftSpan = button.querySelector(".recycle-left")
     
     button.classList.add("recycle-active")
-    span.textContent = "🗑️ 3"
+    leftSpan.textContent = "3"
     
     let count = 3
     this.countdownTimer = setInterval(() => {
       count--
       if (count > 0) {
-        span.textContent = `🗑️ ${count}`
+        leftSpan.textContent = `${count}`
       } else {
         this.deleteAll()
       }
@@ -101,7 +101,7 @@ export default class extends Controller {
     
     const button = this.element
     button.classList.remove("recycle-active")
-    button.querySelector("span:first-child").textContent = "♻️"
+    button.querySelector(".recycle-left").textContent = "♻️"
   }
   
   async deleteAll() {

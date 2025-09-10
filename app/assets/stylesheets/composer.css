@@ -38,12 +38,68 @@
   }
 }
 
-/* Recycle button active state */
+/* Recycle button sections styling */
+.recycle-btn {
+  position: relative;
+  overflow: hidden;
+  transition: width 0.3s ease;
+}
+
+.recycle-sections {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.recycle-left {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.recycle-right {
+  position: absolute;
+  opacity: 0;
+  right: 0.5em;  /* Far right edge */
+  transform: translateX(3em);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+/* Recycle button active state - expand to 3x width */
 .composer__context-btn.recycle-active {
-  width: 7em;
-  padding: 0 1em;
+  width: 8em; /* 3x the original 2.65em */
+  /* padding: 0 1em; - old single section padding */
   background: rgba(34, 197, 94, 0.1);
   animation: pulse-green 1s infinite;
+}
+
+.recycle-active .recycle-left {
+  /* Move countdown to far left edge */
+  position: absolute;
+  left: 0.5em;
+  transform: none;
+}
+
+.recycle-active .recycle-right {
+  /* Show trash icon on right */
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* Hide/slide out search button when recycle is expanded */
+.search-btn {
+  transition: transform 0.3s ease, opacity 0.3s ease, margin-right 0.3s ease;
+}
+
+.composer:has(.recycle-active) .search-btn {
+  transform: translateX(-3em);
+  opacity: 0;
+  margin-right: -2.65em; /* Collapse the space it was taking */
+  pointer-events: none;
 }
 
 @keyframes pulse-green {
