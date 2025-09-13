@@ -1,58 +1,24 @@
-# Campfire
+# Solocooker
 
-Campfire is web-based chat application. It supports many of the features you'd
-expect, including:
+Solocooker is a campfire fork which adds the ability to convert messages to to-dos as well as a recycle button ♻️.\
+The recycle button deletes completed to-dos (click) or cleans up the whole room except incompleted todos (click and hold).
 
-- Multiple rooms, with access controls
-- Direct messages
-- File attachments with previews
-- Search
-- Notifications (via Web Push)
-- @mentions
-- API, with support for bot integrations
+I use this like a disposable piece of paper while working, wrapping up by deleting all notes soon as i found the core of a problem.\
+Works great on shared projects as well.
 
-Campfire is single-tenant: any rooms designated "public" will be accessible by
-all users in the system. To support entirely distinct groups of customers, you
-would deploy multiple instances of the application.
+![output](https://github.com/user-attachments/assets/5c1b5e44-08c3-4125-990c-c3647943c66a)
 
-## Running in development
+# Details / Changes from campfire
+- Message have three states (normal, incomplete and completed to do). Clicking the to-do circle will always push it into the next state, e.g. a finished to-do can be a normal message again.
+- Rooms shared with others are marked with a symbol in the list
+- You can message yourself in Pings to allow quick notes
+- Recycle button: Click to delete completed todos, hold to delete all messages except incomplete todos
 
-    bin/setup
-    bin/rails server
+# Installation
+Run `bin/setup` to install dependencies and prepare the database, then start with `bin/dev`. For production deployment, use `bin/deploy` which uses Kamal for containerized deployment, expects secrets from 1PW.
 
-## Deploying with Docker
+# Thank you
+This idea was originally a rails app i build for myself, thankfully 37Signals Open-Sourced campfire which i now use as base with just some UI changes on top.
+https://github.com/basecamp/once-campfire
 
-Campfire's Docker image contains everything needed for a fully-functional,
-single-machine deployment. This includes the web app, background jobs, caching,
-file serving, and SSL.
-
-To persist storage of the database and file attachments, map a volume to `/rails/storage`.
-
-To configure additional features, you can set the following environment variables:
-
-- `SSL_DOMAIN` - enable automatic SSL via Let's Encrypt for the given domain name
-- `DISABLE_SSL` - alternatively, set `DISABLE_SSL` to serve over plain HTTP
-- `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY` - set these to a valid keypair to
-  allow sending Web Push notifications. You can generate a new keypair by running
-  `/script/admin/create-vapid-key`
-- `SENTRY_DSN` - to enable error reporting to sentry in production, supply your
-  DSN here
-
-For example:
-
-    docker build -t campfire .
-
-    docker run \
-      --publish 80:80 --publish 443:443 \
-      --restart unless-stopped \
-      --volume campfire:/rails/storage \
-      --env SECRET_KEY_BASE=$YOUR_SECRET_KEY_BASE \
-      --env VAPID_PUBLIC_KEY=$YOUR_PUBLIC_KEY \
-      --env VAPID_PRIVATE_KEY=$YOUR_PRIVATE_KEY \
-      --env SSL_DOMAIN=chat.example.com \
-      campfire
-
-
-## Additions by chriopter
-- Added config/deploy.yml and bin/deploy to deploy directly with 1PW Secrets / environment variables
-- Create a 1Password item named "Solocooker Secrets [Environment]" with fields: deploy_ip, deploy_host, secret_key_base, github_token, github_user, vapid_public_key, vapid_private_key
+This is work in progress, therefore e.g. some assets are still shared with campfire (favicon etc.)
