@@ -1,6 +1,6 @@
 # Campfire
 
-Campfire is web-based chat application. It supports many of the features you'd
+Campfire is a web-based chat application. It supports many of the features you'd
 expect, including:
 
 - Multiple rooms, with access controls
@@ -10,15 +10,6 @@ expect, including:
 - Notifications (via Web Push)
 - @mentions
 - API, with support for bot integrations
-
-Campfire is single-tenant: any rooms designated "public" will be accessible by
-all users in the system. To support entirely distinct groups of customers, you
-would deploy multiple instances of the application.
-
-## Running in development
-
-    bin/setup
-    bin/rails server
 
 ## Deploying with Docker
 
@@ -49,9 +40,25 @@ For example:
       --env SECRET_KEY_BASE=$YOUR_SECRET_KEY_BASE \
       --env VAPID_PUBLIC_KEY=$YOUR_PUBLIC_KEY \
       --env VAPID_PRIVATE_KEY=$YOUR_PRIVATE_KEY \
-      --env SSL_DOMAIN=chat.example.com \
+      --env TLS_DOMAIN=chat.example.com \
       campfire
 
+## Running in development
+
+    bin/setup
+    bin/rails server
+
+## Worth Noting
+
+When you start Campfire for the first time, you'll be guided through
+creating an admin account.
+The email address of this admin account will be shown on the login page
+so that people who forget their password know who to contact for help.
+(You can change this email later in the settings)
+
+Campfire is single-tenant: any rooms designated "public" will be accessible by
+all users in the system. To support entirely distinct groups of customers, you
+would deploy multiple instances of the application.
 
 ## Additions by chriopter
 - Added config/deploy.yml and bin/deploy to deploy directly with 1PW Secrets / environment variables
