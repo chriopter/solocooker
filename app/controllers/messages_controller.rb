@@ -44,10 +44,10 @@ class MessagesController < ApplicationController
     @message.destroy
     @message.broadcast_remove
   end
-  
+
   def toggle_todo
     @message.toggle_todo!
-    
+
     respond_to do |format|
       format.turbo_stream { head :ok }
       format.html { redirect_back(fallback_location: room_path(@room)) }

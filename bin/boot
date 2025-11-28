@@ -2,6 +2,91 @@
 
 require "json"
 require "yaml"
+require "securerandom"
+require "fileutils"
+require "openssl"
+require "base64"
+
+STORAGE_PATH = File.expand_path("../storage", __dir__)
+
+# Auto-load secrets from storage, generating them if they don't exist.
+# This runs before any Rails processes start, so all child processes
+# inherit these environment variables.
+module Secrets
+  extend self
+
+  def setup
+    FileUtils.mkdir_p(STORAGE_PATH)
+    load_secret_key_base
+    load_vapid_keys
+  end
+
+  private
+
+  def storage_file(name)
+    File.join(STORAGE_PATH, name)
+  end
+
+  def read_file(name)
+    path = storage_file(name)
+    return nil unless File.exist?(path)
+    content = File.read(path).strip
+    content.empty? ? nil : content
+  end
+
+  def write_file(name, content)
+    File.write(storage_file(name), content)
+  end
+
+  def load_secret_key_base
+    return if ENV["SECRET_KEY_BASE"]
+
+    secret = read_file(".secret_key_base")
+    unless secret
+      secret = SecureRandom.hex(64)
+      write_file(".secret_key_base", secret)
+      puts "Generated new SECRET_KEY_BASE in storage/.secret_key_base"
+    end
+    ENV["SECRET_KEY_BASE"] = secret
+  end
+
+  def load_vapid_keys
+    return if ENV["VAPID_PRIVATE_KEY"] && ENV["VAPID_PUBLIC_KEY"]
+
+    private_key = read_file(".vapid_private_key")
+    public_key = read_file(".vapid_public_key")
+
+    # Regenerate both if either is missing
+    unless private_key && public_key
+      private_key, public_key = generate_vapid_keys
+      write_file(".vapid_private_key", private_key)
+      write_file(".vapid_public_key", public_key)
+      puts "Generated new VAPID keys in storage/"
+    end
+
+    ENV["VAPID_PRIVATE_KEY"] ||= private_key
+    ENV["VAPID_PUBLIC_KEY"] ||= public_key
+  end
+
+  # Generate VAPID keys using OpenSSL (no gem dependencies)
+  # Compatible with the webpush gem's format
+  def generate_vapid_keys
+    key = OpenSSL::PKey::EC.generate("prime256v1")
+
+    # Private key: raw 32 bytes, base64url encoded
+    private_raw = key.private_key.to_s(2).rjust(32, "\x00")
+
+    # Public key: uncompressed EC point (65 bytes), base64url encoded
+    public_raw = key.public_key.to_octet_string(:uncompressed)
+
+    [
+      Base64.urlsafe_encode64(private_raw, padding: false),
+      Base64.urlsafe_encode64(public_raw, padding: false)
+    ]
+  end
+end
+
+Secrets.setup
 
 class ProcessMonitor
   SIGNALS = %w[ INT TERM CLD ]

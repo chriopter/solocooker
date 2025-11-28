@@ -24,8 +24,8 @@ module MessagesHelper
 
   def message_tag(message, &)
     message_timestamp_milliseconds = message.created_at.to_fs(:epoch)
-    
-    css_classes = ["message"]
+
+    css_classes = [ "message" ]
     css_classes << "message--emoji" if message.plain_text_body.all_emoji?
     css_classes << "message--todo" if message.todo_state.present?
     css_classes << "message--todo-checked" if message.todo_state == 1

@@ -45,11 +45,11 @@ class Message < ApplicationRecord
   def toggle_todo!
     update!(todo_state: todo_state.nil? ? 0 : todo_state == 0 ? 1 : nil)
   end
-  
+
   def todo?
     todo_state.present?
   end
-  
+
   def todo_checked?
     todo_state == 1
   end

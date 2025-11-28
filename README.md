@@ -60,6 +60,24 @@ Campfire is single-tenant: any rooms designated "public" will be accessible by
 all users in the system. To support entirely distinct groups of customers, you
 would deploy multiple instances of the application.
 
-## Additions by chriopter
-- Added config/deploy.yml and bin/deploy to deploy directly with 1PW Secrets / environment variables
-- Create a 1Password item named "Solocooker Secrets [Environment]" with fields: deploy_ip, deploy_host, secret_key_base, github_token, github_user, vapid_public_key, vapid_private_key
+## Solocooker Additions
+
+```yaml
+# docker-compose.yml
+services:
+  web:
+    image: ghcr.io/chriopter/solocooker:main
+    ports:
+      - "3333:80"
+    environment:
+      DISABLE_SSL: "1"  # or use SSL_DOMAIN: chat.example.com
+    volumes:
+      - ./data/storage:/rails/storage
+    restart: unless-stopped
+```
+
+```bash
+docker compose up -d
+```
+
+Secrets are auto-generated on first run and stored in `./data/storage/`.
