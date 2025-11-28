@@ -481,8 +481,8 @@ img.message__attachment {
   }
   
   .message__body-content {
-    background-color: #e3f2fd;
-    border-color: #90caf9;
+    --message-background: oklch(var(--lch-blue-light));
+    --message-color: var(--color-text);
   }
 
   :is(.message__meta, .message__heading) {
