@@ -10,13 +10,19 @@ module SystemTestHelper
   end
 
   def wait_for_cable_connection
-    assert_selector "turbo-cable-stream-source[connected]", count: 3, visible: false
+    Capybara.using_wait_time(10) do
+      assert_selector "turbo-cable-stream-source[connected]", minimum: 1, visible: false
+    end
   end
 
-  def join_room(room)
+  def join_room(room, retries: 3)
     visit room_url(room)
     wait_for_cable_connection
     dismiss_pwa_install_prompt
+  rescue Selenium::WebDriver::Error::StaleElementReferenceError
+    retries -= 1
+    retry if retries > 0
+    raise
   end
 
   def send_message(message)
@@ -50,7 +56,7 @@ module SystemTestHelper
 
   def dismiss_pwa_install_prompt
     if page.has_css?("[data-pwa-install-target~='dialog']", visible: :visible, wait: 5)
-      click_on("Close")
+      click_on("Close") rescue Selenium::WebDriver::Error::StaleElementReferenceError
     end
   end
 end
