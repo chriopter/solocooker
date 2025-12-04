@@ -29,7 +29,7 @@
     <%= yield :head %>
   </head>
 
-  <body class="<%= body_classes %>" data-controller="local-time lightbox">
+  <body class="<%= body_classes %>" data-controller="local-time lightbox thread-panel">
     <a href="#main-content" class="skip-navigation btn">Skip to main content</a>
 
     <nav id="nav">
@@ -56,8 +56,6 @@
         <%= yield :footer %>
       </footer>
     </main>
-
-    <!-- Sidebar removed - navigation is now via jump menu -->
 
     <%= render "layouts/lightbox" %>
 

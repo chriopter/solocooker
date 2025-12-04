@@ -1,11 +1,14 @@
-<% @page_title = room_display_name(@room) %>
+<% @page_title = @thread_parent ? "Thread" : room_display_name(@room) %>
 <% @body_class = "sidebar" %>
 <% content_for :head do %>
   <%= turbo_exempts_page_from_preview %>
   <meta name="current-room-id" content="<%= @room.id %>">
+  <% if @thread_parent %>
+    <meta name="current-thread-id" content="<%= @thread_parent.id %>">
+  <% end %>
 <% end %>
 
-<%= render "rooms/show/nav", room: @room %>
+<%= render "rooms/show/nav", room: @room, thread_parent: @thread_parent %>
 
 <% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
 
@@ -13,12 +16,22 @@
   <%= render "messages/template" %>
 
   <%= messages_tag(@room) do %>
-    <%= render "rooms/show/invitation", room: @room %>
+    <% if @thread_parent %>
+      <%# Show thread parent at top with back link styling %>
+      <div class="thread-view__parent" data-action="click->thread-nav#backToRoom">
+        <%= render partial: "messages/message", locals: { message: @thread_parent } %>
+      </div>
+      <div class="thread-view__separator">
+        <span class="thread-view__reply-count"><%= pluralize(@messages.count, "reply") %></span>
+      </div>
+    <% else %>
+      <%= render "rooms/show/invitation", room: @room %>
+    <% end %>
     <%= render partial: "messages/message", collection: @messages, cached: true %>
   <% end %>
 
   <%= turbo_stream_from @room, :messages %>
-  <%= button_to_jump_to_newest_message %>
+  <%= button_to_jump_to_newest_message unless @thread_parent %>
 <% end %>
 
-<%= render "rooms/show/composer", room: @room %>
+<%= render "rooms/show/composer", room: @room, thread_parent: @thread_parent %>

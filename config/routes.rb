@@ -68,6 +68,8 @@ Rails.application.routes.draw do
     resources :messages do
       member do
         patch :toggle_todo
+        patch :add_to_thread
+        patch :remove_from_thread
       end
     end
 

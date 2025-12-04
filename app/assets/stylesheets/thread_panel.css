@@ -1,0 +1,154 @@
+/* Thread View styles */
+
+/* Golden color variables - follows Fizzy pattern */
+:root {
+  --color-golden: oklch(89.1% 0.178 95.7);
+
+  @media (prefers-color-scheme: dark) {
+    --color-golden: oklch(62% 0.159 258);
+  }
+}
+
+/* Thread parent shown at top of thread view */
+.thread-view__parent {
+  border-bottom: 1px solid var(--color-border);
+  background-color: oklch(var(--lch-black) / 3%);
+}
+
+/* Thread nav in header */
+.thread-nav {
+  display: flex;
+  align-items: center;
+}
+
+.thread-nav__back {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.thread-nav__arrow {
+  font-size: 1.2em;
+}
+
+.thread-view__separator {
+  align-items: center;
+  display: flex;
+  gap: 0.5em;
+  padding: 0.75em 1em;
+  flex-shrink: 0;
+
+  &::before,
+  &::after {
+    background-color: var(--color-border);
+    content: "";
+    flex: 1;
+    height: 1px;
+  }
+}
+
+.thread-view__reply-count {
+  color: var(--color-text-muted);
+  font-size: 0.8em;
+  white-space: nowrap;
+}
+
+.thread-view__messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 1em;
+}
+
+/* Messages in thread view - ensure visible */
+.thread-view__parent .message,
+.thread-view__messages .message {
+  visibility: visible;
+}
+
+/* Hide day separator in thread view - not needed */
+.thread-view__parent .message__day-separator,
+.thread-view__messages .message__day-separator {
+  display: none !important;
+}
+
+/* Thread composer */
+.thread-view__composer {
+  border-top: 1px solid var(--color-border);
+  padding: 0.75em;
+  flex-shrink: 0;
+  background-color: var(--color-bg);
+}
+
+.message--dragging {
+  opacity: 0.5;
+}
+
+/* Visual feedback when hovering over a message as drop target */
+.message--drop-target .message__body-content {
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--color-golden) 80%, transparent);
+}
+
+/* Visual feedback when hovering over messages area to remove from thread */
+.messages--drop-target {
+  background-color: color-mix(in srgb, var(--color-golden) 5%, transparent);
+  box-shadow: inset 0 0 0 2px color-mix(in oklch, var(--color-golden) 30%, transparent);
+}
+
+/* Thread indicator on messages with children - circle at TOP RIGHT inside bubble */
+.message--has-thread .message__body-content {
+  position: relative;
+}
+
+.message--has-thread .message__thread-indicator {
+  align-items: center;
+  background: var(--color-text-muted);
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  font-size: 0.65em;
+  font-weight: 700;
+  height: 1.8em;
+  justify-content: center;
+  min-width: 1.8em;
+  padding: 0.1em;
+  position: absolute;
+  right: -0.5em;
+  top: -0.5em;
+  box-shadow: 0 2px 4px oklch(0% 0 0 / 20%);
+  transition: transform 150ms ease, background 150ms ease;
+  z-index: 5;
+
+  &:hover {
+    transform: scale(1.15);
+  }
+
+  img {
+    display: none;
+  }
+}
+
+/* Golden highlight for unread replies - Fizzy effect */
+.message--has-unread-replies .message__thread-indicator {
+  background: linear-gradient(135deg, var(--color-golden), color-mix(in oklch, var(--color-golden) 80%, black));
+}
+
+.message--has-unread-replies .message__body-content {
+  background-color: color-mix(in srgb, var(--color-golden) 4%, var(--color-message-bg));
+  background-image: linear-gradient(60deg,
+    color-mix(in srgb, var(--color-golden) 45%, transparent) 0%,
+    color-mix(in srgb, var(--color-golden) 10%, transparent) 33%,
+    color-mix(in srgb, var(--color-golden) 5%, transparent) 66%,
+    color-mix(in srgb, var(--color-golden) 45%, transparent) 100%
+  );
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, var(--color-golden) 100%, transparent),
+    0 0 0.2em 0.2em color-mix(in oklch, var(--color-golden) 25%, transparent),
+    0 0 1em 0.5em color-mix(in oklch, var(--color-golden) 25%, transparent);
+}
+
+/* Drop target styles for room name in nav */
+.room-menu__trigger.drop-target {
+  background-color: color-mix(in srgb, var(--color-golden) 20%, var(--color-bg)) !important;
+  box-shadow: 0 0 0 2px var(--color-golden);
+}

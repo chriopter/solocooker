@@ -4,6 +4,9 @@ A fork of [Campfire](https://github.com/basecamp/campfire) by [37signals](https:
 
 ![Solocooker Demo](https://chriopter.de/user/pages/03.texts/campfire-fork-solocooker/solocooker.gif)
 
+
+Next: Fix gold effect on new message / unread thread logic, Hot updates working on that
+
 ## Development
 
 ```bash
@@ -32,3 +35,7 @@ docker compose up -d
 ```
 
 Secrets are auto-generated on first run and stored in `./data/storage/`.
+
+## Credits
+
+- Golden highlight effect borrowed from [Fizzy](https://github.com/basecamp/fizzy)

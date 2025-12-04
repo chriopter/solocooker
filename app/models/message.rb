@@ -1,6 +1,8 @@
 class Message < ApplicationRecord
   include Attachment, Broadcasts, Mentionee, Pagination, Searchable
 
+  has_ancestry depth_cache_column: nil, orphan_strategy: :adopt
+
   belongs_to :room, touch: true
   belongs_to :creator, class_name: "User", default: -> { Current.user }
 
@@ -11,7 +13,11 @@ class Message < ApplicationRecord
   before_create -> { self.client_message_id ||= Random.uuid } # Bots don't care
   after_create_commit -> { room.receive(self) }
 
+  # Touch parent when ancestry changes so cache is invalidated
+  after_save :touch_ancestry_parents, if: :saved_change_to_ancestry?
+
   scope :ordered, -> { order(:created_at) }
+  scope :roots_only, -> { where(ancestry: nil) }
   scope :with_creator, -> { preload(creator: :avatar_attachment) }
   scope :with_attachment_details, -> {
     with_rich_text_body_and_embeds
@@ -52,5 +58,37 @@ class Message < ApplicationRecord
 
   def todo_checked?
     todo_state == 1
+  end
+
+  def thread?
+    has_children?
+  end
+
+  def reply_count
+    children.count
+  end
+
+  # Has unread replies if: user owns this message AND there are children newer than parent
+  def has_unread_replies?(user = Current.user)
+    return false unless thread? && user
+    return false unless creator_id == user.id
+    children.where("created_at > ?", updated_at).exists?
+  end
+
+  def thread_parent
+    is_root? ? self : root
+  end
+
+  private
+
+  def touch_ancestry_parents
+    # Touch old parent (if was in a thread)
+    old_ancestry = saved_change_to_ancestry.first
+    if old_ancestry.present?
+      old_parent = Message.find_by(id: old_ancestry.split("/").last)
+      old_parent&.touch
+    end
+    # Touch new parent (if now in a thread)
+    parent&.touch
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_11_26_130131) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_04_160109) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -93,12 +93,14 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_26_130131) do
   end
 
   create_table "messages", force: :cascade do |t|
+    t.string "ancestry"
     t.string "client_message_id", null: false
     t.datetime "created_at", null: false
     t.integer "creator_id", null: false
     t.integer "room_id", null: false
     t.integer "todo_state"
     t.datetime "updated_at", null: false
+    t.index ["ancestry"], name: "index_messages_on_ancestry"
     t.index ["creator_id"], name: "index_messages_on_creator_id"
     t.index ["room_id"], name: "index_messages_on_room_id"
     t.index ["todo_state"], name: "index_messages_on_todo_state"
@@ -166,7 +168,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_26_130131) do
     t.index ["user_id"], name: "index_webhooks_on_user_id"
   end
 
-  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "bans", "users"
   add_foreign_key "boosts", "messages"

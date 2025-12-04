@@ -47,6 +47,7 @@ gem "net-http-persistent"
 gem "kredis"
 gem "platform_agent"
 gem "thruster"
+gem "ancestry"
 
 group :development, :test do
   gem "debug"

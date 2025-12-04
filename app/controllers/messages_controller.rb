@@ -2,7 +2,7 @@ class MessagesController < ApplicationController
   include ActiveStorage::SetCurrent, RoomScoped
 
   before_action :set_room, except: :create
-  before_action :set_message, only: %i[ show edit update destroy toggle_todo ]
+  before_action :set_message, only: %i[ show edit update destroy toggle_todo add_to_thread remove_from_thread ]
   before_action :ensure_can_administer, only: %i[ edit update destroy ]
 
   layout false, only: :index
@@ -20,6 +20,12 @@ class MessagesController < ApplicationController
   def create
     set_room
     @message = @room.messages.create_with_attachment!(message_params)
+
+    # If parent_id is provided, set the parent for threading
+    if params[:parent_id].present?
+      parent = @room.messages.find_by(id: params[:parent_id])
+      @message.update!(parent: parent) if parent
+    end
 
     @message.broadcast_create
     deliver_webhooks_to_bots
@@ -50,6 +56,34 @@ class MessagesController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream { head :ok }
+      format.html { redirect_back(fallback_location: room_path(@room)) }
+    end
+  end
+
+  def add_to_thread
+    parent_id = params[:parent_id]
+    parent_message = @room.messages.find(parent_id)
+
+    # Track old parent for turbo stream update
+    @old_parent = @message.parent
+
+    # Only allow one level deep - attach to root if parent has ancestry
+    @actual_parent = parent_message.is_root? ? parent_message : parent_message.root
+    @message.update!(parent: @actual_parent)
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_back(fallback_location: room_path(@room)) }
+    end
+  end
+
+  def remove_from_thread
+    @old_parent = @message.parent
+    @message.update!(parent: nil)
+    @message.reload
+
+    respond_to do |format|
+      format.turbo_stream
       format.html { redirect_back(fallback_location: room_path(@room)) }
     end
   end

@@ -1,0 +1,16 @@
+<%# Remove message from main view %>
+<%= turbo_stream.remove dom_id(@message) %>
+
+<%# Update new parent to show thread indicator %>
+<% @actual_parent.reload %>
+<%= turbo_stream.replace dom_id(@actual_parent) do %>
+  <%= render partial: "messages/message", locals: { message: @actual_parent } %>
+<% end %>
+
+<%# Update old parent if reparented from another thread %>
+<% if @old_parent && @old_parent != @actual_parent %>
+  <% @old_parent.reload %>
+  <%= turbo_stream.replace dom_id(@old_parent) do %>
+    <%= render partial: "messages/message", locals: { message: @old_parent } %>
+  <% end %>
+<% end %>

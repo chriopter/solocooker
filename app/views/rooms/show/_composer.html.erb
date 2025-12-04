@@ -65,6 +65,9 @@
         </div>
 
         <%= form.hidden_field :client_message_id, data: { composer_target: "clientid" } %>
+        <% if local_assigns[:thread_parent] && thread_parent %>
+          <%= hidden_field_tag :parent_id, thread_parent.id %>
+        <% end %>
       <% end %>
     </turbo-frame>
   </div>

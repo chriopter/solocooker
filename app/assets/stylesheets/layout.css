@@ -1,35 +1,19 @@
 html {
   overscroll-behavior: none;
-  overflow-x: hidden; /* Prevent horizontal scroll when sidebar is off-screen */
+  overflow-x: hidden;
 }
 
 body {
   --footer-height: calc((var(--block-space)) + 3.6em + var(--block-space));
   --navbar-height: 4.125em;
-  --sidebar-width: 0vw;
 
   display: grid;
   grid-template-areas:
-    "nav sidebar"
-    "main sidebar";
-  grid-template-columns: 1fr var(--sidebar-width);
+    "nav"
+    "main";
+  grid-template-columns: 1fr;
   grid-template-rows: min-content 1fr;
   max-block-size: 100dvh;
-  transition: grid-template-columns 300ms ease; /* Animate grid when sidebar collapses */
-
-  &.sidebar {
-    @media (min-width: 100ch) {
-      --sidebar-width: 26vw;
-    }
-  }
-  
-  /* Collapse grid column when sidebar is closed on desktop */
-  &.sidebar:has(#sidebar:not(.open)) {
-    @media (min-width: 100ch) {
-      --sidebar-width: 0;
-    }
-  }
-  
 }
 
 #app-logo {
@@ -83,42 +67,9 @@ body {
   }
 }
 
+/* Sidebar is no longer used - thread view replaces main content */
 #sidebar {
-  grid-area: sidebar;
-  position: relative;
-  transition: transform 300ms ease;
-
-  .sidebar & {
-    -webkit-backdrop-filter: blur(66px);
-    backdrop-filter: blur(66px);
-    background-color: oklch(var(--lch-white) / 0.66);
-    block-size: 100dvh;
-    max-block-size: 100dvh;
-    z-index: 3;
-
-    @media (max-width: 100ch) {
-      inset: 0;
-      position: fixed;
-      transform: translate(100%);
-    }
-    
-    /* Apply same slide behavior to desktop */
-    @media (min-width: 100ch) {
-      transform: translate(100%);
-    }
-  }
-
-  &.open {
-    @media (max-width: 100ch) {
-      transform: translate(0);
-    }
-    
-    @media (min-width: 100ch) {
-      transform: translate(0);
-    }
-  }
-
-  
+  display: none;
 }
 
 #footer {

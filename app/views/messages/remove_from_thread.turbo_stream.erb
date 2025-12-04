@@ -1,0 +1,11 @@
+<%= turbo_stream.remove dom_id(@message) %>
+<%= turbo_stream.append dom_id(@room, :messages) do %>
+  <%= render partial: "messages/message", locals: { message: @message } %>
+<% end %>
+<%# Update old parent to refresh thread indicator %>
+<% if @old_parent %>
+  <% @old_parent.reload %>
+  <%= turbo_stream.replace dom_id(@old_parent) do %>
+    <%= render partial: "messages/message", locals: { message: @old_parent } %>
+  <% end %>
+<% end %>

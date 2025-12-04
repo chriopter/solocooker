@@ -8,7 +8,17 @@ class RoomsController < ApplicationController
   end
 
   def show
-    @messages = find_messages
+    if params[:thread].present?
+      @thread_parent = @room.messages.find_by(id: params[:thread])
+      if @thread_parent
+        @messages = @thread_parent.children.with_creator.with_attachment_details.with_boosts.ordered
+      else
+        redirect_to room_path(@room), alert: "Thread not found"
+        return
+      end
+    else
+      @messages = find_messages
+    end
   end
 
   def destroy
@@ -95,7 +105,8 @@ class RoomsController < ApplicationController
     end
 
     def find_messages
-      messages = @room.messages.with_creator.with_attachment_details.with_boosts
+      # Only show root messages (not thread children) in main feed
+      messages = @room.messages.roots_only.with_creator.with_attachment_details.with_boosts
 
       if show_first_message = messages.find_by(id: params[:message_id])
         @messages = messages.page_around(show_first_message)

@@ -14,7 +14,7 @@ module MessagesHelper
 
   def messages_tag(room, &)
     tag.div id: dom_id(room, :messages), class: "messages", data: {
-      controller: "maintain-scroll refresh-room",
+      controller: "maintain-scroll refresh-room messages-drop",
       action: [ maintain_scroll_actions, refresh_room_actions ].join(" "),
       messages_target: "messages",
       refresh_room_loaded_at_value: room.updated_at.to_fs(:epoch),
@@ -25,15 +25,19 @@ module MessagesHelper
   def message_tag(message, &)
     message_timestamp_milliseconds = message.created_at.to_fs(:epoch)
 
-    css_classes = [ "message" ]
+    css_classes = [ "message", "message--formatted" ]
+    css_classes << "message--me" if message.creator_id == Current.user&.id
     css_classes << "message--emoji" if message.plain_text_body.all_emoji?
     css_classes << "message--todo" if message.todo_state.present?
     css_classes << "message--todo-checked" if message.todo_state == 1
+    css_classes << "message--has-thread" if message.thread?
+    css_classes << "message--has-unread-replies" if message.has_unread_replies?
+    css_classes << "message--in-thread" if message.parent_id.present?
 
     tag.div id: dom_id(message),
       class: css_classes.join(" "),
       data: {
-        controller: "reply",
+        controller: "reply message-drag",
         user_id: message.creator_id,
         message_id: message.id,
         message_timestamp: message_timestamp_milliseconds,
