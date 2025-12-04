@@ -1,77 +1,91 @@
-#!/usr/bin/env ruby
-require "fileutils"
-require "socket"
-require "timeout"
+#!/usr/bin/env bash
+set -eo pipefail
 
-REDIS_PORT = 6379
-REDIS_HOST = "localhost"
-APP_ROOT = File.expand_path("..", __dir__)
+REDIS_PORT=6379
+REDIS_HOST="localhost"
 
-def system!(*args)
-  system(*args, exception: true)
-end
+if [ "$RAILS_ENV" = "production" ]; then
+  echo "RAILS_ENV is production; bailing out"
+  exit 1
+fi
 
-def installed?(tool)
-  system("command -v #{tool} > /dev/null 2>&1")
-end
-
-def redis_running?
-  Timeout::timeout(3) do
-    socket = TCPSocket.new(REDIS_HOST, REDIS_PORT)
-    socket.close
-    return true
-  end
-rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, SocketError, Timeout::Error
-  return false
-end
-
-if ENV["RAILS_ENV"] == "production"
-  puts "RAILS_ENV is production; bailing out"
-  exit
-end
-
-FileUtils.chdir APP_ROOT do
-  puts "== Installing dependencies =="
-
-  if installed?("brew")
-    system "brew install sqlite ffmpeg mise"
-  elsif installed?("pacman")
-    system "sudo pacman -S --noconfirm --needed sqlite ffmpeg mise"
-  elsif installed?("apt")
-    system "sudo apt-get install --no-install-recommends -y libsqlite3-0 ffmpeg"
-  end
-
-  if installed?("mise")
-    system "mise install"
+# Check if gum is installed for nice output
+if ! command -v gum &> /dev/null; then
+  if command -v pacman &> /dev/null; then
+    sudo pacman -S --noconfirm --needed gum
+  elif command -v brew &> /dev/null; then
+    brew install gum
   else
-    puts "Couldn't install mise"
-    puts "Install mise using your package manager or via:"
-    puts "https://mise.jdx.dev/installing-mise.html"
-    exit 1
-  end
+    echo "Please install gum for better output: https://github.com/charmbracelet/gum"
+  fi
+fi
 
-  system("bundle check") || system!("bundle install")
+step() {
+  if command -v gum &> /dev/null; then
+    gum style --foreground 212 "→ $1"
+  else
+    echo "→ $1"
+  fi
+}
 
-  puts "\n== Preparing database =="
-  if ARGV.include?("--reset")
-    system "rm -rf ./storage/{db,files}"
-    system! "bin/rails db:reset"
-  end
-  system! "bin/rails db:prepare"
+redis_running() {
+  (echo > /dev/tcp/$REDIS_HOST/$REDIS_PORT) 2>/dev/null
+}
 
-  unless redis_running?
-    if installed?("docker")
-      system("docker run -d --name campfire-redis -p #{REDIS_PORT}:#{REDIS_PORT} redis:7")
+step "Installing dependencies"
+
+if command -v brew &> /dev/null; then
+  brew install sqlite ffmpeg mise
+elif command -v pacman &> /dev/null; then
+  sudo pacman -S --noconfirm --needed sqlite ffmpeg mise
+elif command -v apt &> /dev/null; then
+  sudo apt-get install --no-install-recommends -y libsqlite3-0 ffmpeg
+fi
+
+if command -v mise &> /dev/null; then
+  step "Installing Ruby via mise"
+  mise install
+else
+  echo "Couldn't install mise"
+  echo "Install mise using your package manager or via:"
+  echo "https://mise.jdx.dev/installing-mise.html"
+  exit 1
+fi
+
+step "Installing gems"
+bundle check || bundle install
+
+step "Preparing database"
+if [[ " $* " == *" --reset "* ]]; then
+  rm -rf ./storage/{db,files}
+  bin/rails db:reset
+fi
+bin/rails db:prepare
+
+if ! redis_running; then
+  step "Starting Redis"
+  if command -v docker &> /dev/null; then
+    if docker ps -a --format '{{.Names}}' | grep -q '^campfire-redis$'; then
+      docker start campfire-redis
     else
-      puts "Couldn't start Redis"
-      puts "Install either docker or redis and then run this command again"
-      exit 1
-    end
-  end
+      docker run -d --name campfire-redis -p $REDIS_PORT:$REDIS_PORT redis:7
+    fi
+  else
+    echo "Couldn't start Redis"
+    echo "Install either docker or redis and then run this command again"
+    exit 1
+  fi
+fi
 
-  puts "\n== Removing old logs and tempfiles =="
-  system! "bin/rails log:clear tmp:clear"
+step "Removing old logs and tempfiles"
+bin/rails log:clear tmp:clear
 
-  puts "\n== Restarting services =="
-  system! "bin/rails restart"
-end
+step "Restarting services"
+bin/rails restart
+
+echo ""
+if command -v gum &> /dev/null; then
+  gum style --foreground 40 "✓ Setup complete!"
+else
+  echo "✓ Setup complete!"
+fi

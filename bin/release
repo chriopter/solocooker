@@ -1,0 +1,76 @@
+#!/usr/bin/env ruby
+require "bundler/setup"
+require "sshkit"
+require "sshkit/dsl"
+
+include SSHKit::DSL
+
+def run_locally(&block)
+  on(:local, &block)
+end
+
+class Release
+  attr_reader :version
+
+  def initialize(version)
+    @version = version
+  end
+
+  def perform
+    verify_clean_working_directory
+    verify_on_main_branch
+    create_github_release
+    build_and_push_docker_image
+    export_source_code
+  end
+
+  private
+
+  def verify_clean_working_directory
+    run_locally do
+      unless test("git diff --quiet HEAD")
+        raise "Working directory is not clean. Commit or stash changes before releasing."
+      end
+    end
+  end
+
+  def verify_on_main_branch
+    run_locally do
+      branch = capture(:git, "rev-parse", "--abbrev-ref", "HEAD").strip
+      unless branch == "main"
+        raise "Must be on main branch to release. Currently on: #{branch}"
+      end
+    end
+  end
+
+  def create_github_release
+    run_locally do
+      execute :gh, "release", "create", version, "--title", version, "--generate-notes"
+    end
+  end
+
+  def build_and_push_docker_image
+    run_locally do
+      execute :docker, "buildx", "build",
+        "--platform", "linux/amd64,linux/arm64",
+        "-t", "campfire:#{version}",
+        "-t", "campfire:latest",
+        "--push", "."
+    end
+  end
+
+  def export_source_code
+    run_locally do
+      execute :docker, "build", "-f", "Dockerfile-export", "-t", "campfire-export", "."
+      execute :docker, "run", "--rm", "campfire-export", "cat", "/app/campfire.zip", ">", "campfire-#{version}.zip"
+    end
+  end
+end
+
+if ARGV.empty?
+  puts "Usage: bin/release <version>"
+  puts "Example: bin/release v1.0.0"
+  exit 1
+end
+
+Release.new(ARGV[0]).perform

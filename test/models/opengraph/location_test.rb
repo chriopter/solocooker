@@ -21,6 +21,22 @@ class Opengraph::LocationTest < ActiveSupport::TestCase
     assert_equal [ "is not public" ], location.errors[:url]
   end
 
+  test "link-local network urls" do
+    Resolv.stubs(:getaddress).with("www.example.com").returns("169.254.169.254")
+
+    location = Opengraph::Location.new("https://www.example.com")
+    assert_not location.valid?
+    assert_equal [ "is not public" ], location.errors[:url]
+  end
+
+  test "ipv6 mapped ipv4 private network urls" do
+    Resolv.stubs(:getaddress).with("www.example.com").returns("::ffff:192.168.1.1")
+
+    location = Opengraph::Location.new("https://www.example.com")
+    assert_not location.valid?
+    assert_equal [ "is not public" ], location.errors[:url]
+  end
+
   test "avoid reading file urls when expecting HTML" do
     large_file = Opengraph::Location.new("https://www.example.com/100gb.zip")
 

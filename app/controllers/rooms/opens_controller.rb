@@ -1,6 +1,7 @@
 class Rooms::OpensController < RoomsController
   before_action :set_room, only: %i[ show edit update ]
   before_action :ensure_can_administer, only: %i[ update ]
+  before_action :ensure_permission_to_create_rooms, only: %i[ new create ]
   before_action :remember_last_room_visited, only: :show
   before_action :force_room_type, only: %i[ edit update ]
 

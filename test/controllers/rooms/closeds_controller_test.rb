@@ -29,6 +29,27 @@ class Rooms::ClosedsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to room_url(Room.last)
   end
 
+  test "non-admin cannot create room when restricted" do
+    accounts(:one).update!(settings: { restrict_room_creation_to_administrators: true })
+    sign_in :jz
+
+    get new_rooms_closed_url
+    assert_response :forbidden
+
+    post rooms_closeds_url, params: { room: { name: "My New Room" }, user_ids: [ users(:jz).id ] }
+    assert_response :forbidden
+  end
+
+  test "admin can create room when restricted" do
+    accounts(:one).update!(settings: { restrict_room_creation_to_administrators: true })
+
+    get new_rooms_closed_url
+    assert_response :success
+
+    post rooms_closeds_url, params: { room: { name: "My New Room" }, user_ids: [ users(:david).id ] }
+    assert_redirected_to room_url(Room.last)
+  end
+
   test "update with membership revisions" do
     assert_difference -> { rooms(:designers).reload.users.count }, -1 do
       put rooms_closed_url(rooms(:designers)), params: {

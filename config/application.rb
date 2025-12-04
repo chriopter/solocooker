@@ -7,7 +7,7 @@ Bundler.require(*Rails.groups)
 module Campfire
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 8.1
+    config.load_defaults 8.2
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
@@ -17,7 +17,7 @@ module Campfire
     # Fallback to English if translation key is missing
     config.i18n.fallbacks = true
 
-    # Use SQL schema format to include search-related objects
-    config.active_record.schema_format = :sql
+    # Use Ruby schema format (virtual tables now supported)
+    config.active_record.schema_format = :ruby
   end
 end

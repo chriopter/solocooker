@@ -33,6 +33,8 @@ gem "sentry-ruby"
 gem "sentry-rails"
 
 # Other
+gem "ostruct"
+gem "benchmark"
 gem "bcrypt"
 gem "web-push"
 gem "rqrcode"

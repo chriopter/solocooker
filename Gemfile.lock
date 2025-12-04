@@ -136,6 +136,7 @@ GEM
     base64 (0.3.0)
     bcrypt (3.1.20)
     bcrypt_pbkdf (1.1.1)
+    benchmark (0.4.1)
     bigdecimal (3.3.1)
     brakeman (7.1.1)
       racc
@@ -435,6 +436,7 @@ PLATFORMS
 
 DEPENDENCIES
   bcrypt
+  benchmark
   brakeman
   capybara
   debug
@@ -447,6 +449,7 @@ DEPENDENCIES
   kredis
   mocha
   net-http-persistent
+  ostruct
   platform_agent
   propshaft!
   puma (~> 6.6)
