@@ -6,7 +6,8 @@ module SystemTestHelper
     fill_in "password", with: password
 
     click_on "log_in"
-    assert_selector "a.btn", text: "Designers"
+    # After login, user is redirected to a room. The room name appears in nav.
+    assert_selector ".room-menu__trigger", wait: 5
   end
 
   def wait_for_cable_connection
