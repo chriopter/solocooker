@@ -45,3 +45,6 @@ app/assets/builds/*
 
 # Ignore Redis dump files
 dump.rdb
+
+# Ignore fizzy reference repo
+/fizzy/
