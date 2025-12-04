@@ -463,7 +463,7 @@ DEPENDENCIES
   selenium-webdriver
   sentry-rails
   sentry-ruby
-  sqlite3 (~> 2.7)
+  sqlite3
   stimulus-rails
   thruster
   turbo-rails!

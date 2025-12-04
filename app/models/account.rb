@@ -3,7 +3,7 @@ class Account < ApplicationRecord
 
   has_one_attached :logo
 
-  # Settings with defaults
+  # Settings with defaults (custom implementation since has_json not available)
   class Settings
     DEFAULTS = { restrict_room_creation_to_administrators: false }.freeze
 
@@ -14,6 +14,7 @@ class Account < ApplicationRecord
     def restrict_room_creation_to_administrators
       @data[:restrict_room_creation_to_administrators]
     end
+    alias_method :restrict_room_creation_to_administrators?, :restrict_room_creation_to_administrators
 
     def restrict_room_creation_to_administrators=(value)
       @data[:restrict_room_creation_to_administrators] = ActiveModel::Type::Boolean.new.cast(value)

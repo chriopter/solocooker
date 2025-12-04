@@ -1,14 +1,18 @@
 require "test_helper"
 
 class AccountTest < ActiveSupport::TestCase
-  test "default settings" do
-    account = Account.new
-    assert_equal false, account.settings.restrict_room_creation_to_administrators
-  end
+  test "settings" do
+    accounts(:signal).settings.restrict_room_creation_to_administrators = true
+    assert accounts(:signal).settings.restrict_room_creation_to_administrators?
+    assert_equal({ "restrict_room_creation_to_administrators" => true }, accounts(:signal)[:settings])
 
-  test "can update settings" do
-    account = accounts(:one)
-    account.update!(settings: { restrict_room_creation_to_administrators: true })
-    assert_equal true, account.reload.settings.restrict_room_creation_to_administrators
+    accounts(:signal).update!(settings: { "restrict_room_creation_to_administrators" => "true" })
+    assert accounts(:signal).reload.settings.restrict_room_creation_to_administrators?
+
+    accounts(:signal).settings.restrict_room_creation_to_administrators = false
+    assert_not accounts(:signal).settings.restrict_room_creation_to_administrators?
+    assert_equal({ "restrict_room_creation_to_administrators" => false }, accounts(:signal)[:settings])
+    accounts(:signal).update!(settings: { "restrict_room_creation_to_administrators" => "false" })
+    assert_not accounts(:signal).reload.settings.restrict_room_creation_to_administrators?
   end
 end

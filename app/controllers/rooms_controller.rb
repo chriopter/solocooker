@@ -89,7 +89,9 @@ class RoomsController < ApplicationController
     end
 
     def ensure_permission_to_create_rooms
-      head :forbidden if Current.account.settings.restrict_room_creation_to_administrators && !Current.user.can_administer?
+      if Current.account.settings.restrict_room_creation_to_administrators? && !Current.user.administrator?
+        head :forbidden
+      end
     end
 
     def find_messages

@@ -16,8 +16,5 @@ module Campfire
 
     # Fallback to English if translation key is missing
     config.i18n.fallbacks = true
-
-    # Use Ruby schema format (virtual tables now supported)
-    config.active_record.schema_format = :ruby
   end
 end

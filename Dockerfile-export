@@ -1,9 +1,17 @@
-FROM ruby:3.4.1-slim
+# syntax = docker/dockerfile:1
 
-RUN apt-get update && apt-get install -y zip && rm -rf /var/lib/apt/lists/*
+# Make sure it matches the Ruby version in .ruby-version and Gemfile
+ARG RUBY_VERSION=3.4.7
+FROM ruby:$RUBY_VERSION-slim as base
 
-WORKDIR /app
+# Install the tools we need
+RUN apt update && apt install -y zip
+
+# Export from this folder
+WORKDIR /campfire
+
+# Copy application code
 COPY . .
-RUN zip -r campfire.zip . -x ".git/*" -x "tmp/*" -x "log/*" -x "storage/*"
 
-CMD ["cat", "/app/campfire.zip"]
+# Create the archive
+CMD ["zip", "-r", "/campfire.zip", "."]
