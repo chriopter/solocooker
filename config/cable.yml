@@ -3,8 +3,7 @@ default: &default
   url: redis://localhost:6379
 
 development:
-  <<: *default
-  channel_prefix: campfire_development
+  adapter: async
 
 test:
   adapter: test

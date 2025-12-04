@@ -1,15 +1,24 @@
 <% content_for :nav do %>
   <%= account_logo_tag if Current.account.logo.attached? %>
 
-  <%= tag.span class: "btn btn--reversed btn--faux room--current" do %>
-    <h1 class="room__contents txt-medium overflow-ellipsis">
-      <% if room.direct? %>
-        <span class="for-screen-reader">Ping with</span>
-      <% end %>
+  <div class="room-menu" data-controller="room-menu" data-action="keydown.esc->room-menu#close click@document->room-menu#closeOnClickOutside">
+    <%= tag.button class: "btn btn--reversed room--current room-menu__trigger", data: { action: "click->room-menu#toggle" } do %>
+      <h1 class="room__contents txt-medium overflow-ellipsis">
+        <% if room.direct? %>
+          <span class="for-screen-reader">Ping with</span>
+        <% end %>
+        <%= room_display_name(room) %>
+      </h1>
+      <span class="room-menu__chevron">▼</span>
+    <% end %>
 
-      <%= room_display_name(room) %>
-    </h1>
-  <% end %>
+    <%= tag.dialog class: "room-menu__popup", data: { room_menu_target: "dialog" } do %>
+      <div class="room-menu__list" data-room-menu-target="list"></div>
+      <div class="room-menu__source" hidden>
+        <%= sidebar_turbo_frame_tag(src: user_sidebar_path) %>
+      </div>
+    <% end %>
+  </div>
 
   <%= link_to_edit_room(room) do %>
     <%= image_tag "menu-dots-horizontal.svg", size: 20, aria: { hidden: "true" } %>

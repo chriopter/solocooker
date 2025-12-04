@@ -1,0 +1,159 @@
+/* Room Menu - Simple dropdown from room name */
+
+.room-menu {
+  position: relative;
+}
+
+.room-menu__trigger {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+/* Chevron indicator */
+.room-menu__chevron {
+  font-size: 0.6em;
+  opacity: 0.6;
+  transition: transform 150ms ease;
+}
+
+/* Rotate chevron when menu is open */
+.room-menu:has(dialog[open]) .room-menu__chevron {
+  transform: rotate(180deg);
+}
+
+/* The dialog popup */
+.room-menu__popup {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border-darker);
+  border-radius: 0.75em;
+  box-shadow: 0 4px 20px oklch(var(--lch-black) / 15%);
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5em;
+  min-width: 220px;
+  overflow: visible;
+  padding: 0;
+  z-index: 1000;
+  pointer-events: auto !important;
+
+  &[open] {
+    display: flex;
+  }
+
+  &::backdrop {
+    background: transparent;
+  }
+}
+
+/* Hide the source turbo frame content completely */
+.room-menu__source {
+  display: none !important;
+  visibility: hidden !important;
+  position: absolute !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* The clean menu list */
+.room-menu__list {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5em;
+  pointer-events: auto !important;
+}
+
+/* Section groupings */
+.room-menu__section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 0.5em;
+    padding-bottom: 0.5em;
+  }
+
+  &--settings {
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5em;
+  }
+}
+
+/* Menu items */
+.room-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.5em 0.75em;
+  border-radius: 0.4em;
+  text-decoration: none;
+  color: var(--color-text);
+  font-size: 0.9em;
+  pointer-events: auto !important;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-border);
+  }
+
+  &--action {
+    color: var(--color-text-muted);
+  }
+
+  &--settings {
+    font-size: 0.8em;
+    padding: 0.4em 0.6em;
+  }
+}
+
+/* Action icon (+) */
+.room-menu__action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--color-border-darker);
+  border-radius: 50%;
+  font-size: 1.2em;
+  color: var(--color-text-muted);
+}
+
+/* Avatar images */
+.room-menu__avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Setting icons */
+.room-menu__icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Name text */
+.room-menu__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Shared badge */
+.room-menu__badge {
+  font-size: 0.7em;
+  color: var(--color-text-muted);
+  margin-left: auto;
+}

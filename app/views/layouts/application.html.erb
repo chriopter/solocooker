@@ -57,38 +57,7 @@
       </footer>
     </main>
 
-    <!-- Desktop toggle button must be outside sidebar to avoid transform inheritance -->
-    <% if Current.user %>
-      <button class="btn sidebar__toggle sidebar__toggle--desktop" onclick="let s=document.getElementById('sidebar');s.classList.toggle('open');if(window.matchMedia('(min-width: 100ch)').matches)localStorage.setItem('sidebar-open',s.classList.contains('open'))">
-        <%= image_tag "menu.svg", size: 20, aria: { hidden: "true" } %>
-      </button>
-    <% end %>
-
-    <aside id="sidebar" data-controller="toggle-class" data-toggle-class-toggle-class="open">
-      <%= yield :sidebar %>
-    </aside>
-    
-    <script>
-      // Desktop only: restore sidebar state from localStorage (before transition starts)
-      if (window.matchMedia('(min-width: 100ch)').matches) {
-        const sidebar = document.getElementById('sidebar');
-        const savedState = localStorage.getItem('sidebar-open');
-        
-        // Temporarily disable all transitions to prevent animation on load
-        document.body.style.transition = 'none';
-        sidebar.style.transition = 'none';
-        
-        if (savedState === null || savedState === 'true') {
-          sidebar.classList.add('open');
-        }
-        
-        // Re-enable transitions after a frame
-        requestAnimationFrame(() => {
-          document.body.style.transition = '';
-          sidebar.style.transition = '';
-        });
-      }
-    </script>
+    <!-- Sidebar removed - navigation is now via jump menu -->
 
     <%= render "layouts/lightbox" %>
 
