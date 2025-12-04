@@ -14,7 +14,7 @@ class RoomsController < ApplicationController
         @messages = @thread_parent.children.with_creator.with_attachment_details.with_boosts.ordered
       else
         redirect_to room_path(@room), alert: "Thread not found"
-        return
+        nil
       end
     else
       @messages = find_messages
