@@ -7,7 +7,8 @@ class Account < ApplicationRecord
   class Settings
     DEFAULTS = { restrict_room_creation_to_administrators: false }.freeze
 
-    def initialize(data = {})
+    def initialize(account, data = {})
+      @account = account
       @data = DEFAULTS.merge((data || {}).symbolize_keys)
     end
 
@@ -18,21 +19,28 @@ class Account < ApplicationRecord
 
     def restrict_room_creation_to_administrators=(value)
       @data[:restrict_room_creation_to_administrators] = ActiveModel::Type::Boolean.new.cast(value)
+      sync_to_account!
     end
 
     def to_h
-      @data
+      @data.transform_keys(&:to_s)
+    end
+
+    private
+
+    def sync_to_account!
+      @account.write_attribute(:settings, to_h)
     end
   end
 
   def settings
-    @settings ||= Settings.new(super)
+    @settings ||= Settings.new(self, read_attribute(:settings))
   end
 
   def settings=(value)
     value = value.to_h if value.is_a?(Settings)
     value = value.transform_values { |v| ActiveModel::Type::Boolean.new.cast(v) if v.is_a?(String) && %w[true false 0 1].include?(v) } if value.is_a?(Hash)
-    super(value)
+    write_attribute(:settings, value)
     @settings = nil
   end
 end
