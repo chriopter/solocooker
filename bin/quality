@@ -1,0 +1,3 @@
+rubocop -A
+rails test
+bin/rails db:setup test:system
