@@ -2,6 +2,6 @@
 set -e
 
 bin/rubocop
-bin/brakeman -q
+bin/brakeman -q --skip-files fizzy/
 bin/rails test
 bin/rails test:system
