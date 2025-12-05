@@ -82,6 +82,9 @@ Rails.application.routes.draw do
     end
 
     get "@:message_id", to: "rooms#show", as: :at_message
+
+    # Thread view: /rooms/12/818 shows thread with parent message 818
+    get ":thread_id", to: "rooms#show", as: :thread, constraints: { thread_id: /\d+/ }
   end
 
   namespace :rooms do
