@@ -11,11 +11,10 @@ module SystemTestHelper
   end
 
   def wait_for_cable_connection
-    Capybara.using_wait_time(3) do
-      assert_selector "turbo-cable-stream-source[connected]", minimum: 1, visible: false
-    end
-  rescue Capybara::ExpectationNotMet
-    # Cable may not connect in test environment, continue anyway
+    # Only wait for cable with async adapter (test adapter doesn't connect)
+    return unless ENV["ACTION_CABLE_ADAPTER"] == "async"
+
+    assert_selector "turbo-cable-stream-source[connected]", minimum: 1, visible: false, wait: 5
   end
 
   def join_room(room, retries: 3)
@@ -25,7 +24,7 @@ module SystemTestHelper
     dismiss_pwa_install_prompt
   rescue Selenium::WebDriver::Error::StaleElementReferenceError
     retries -= 1
-    sleep 0.5
+    sleep 0.2
     retry if retries > 0
     raise
   end
@@ -60,7 +59,7 @@ module SystemTestHelper
   end
 
   def dismiss_pwa_install_prompt
-    if page.has_css?("[data-pwa-install-target~='dialog']", visible: :visible, wait: 1)
+    if page.has_css?("[data-pwa-install-target~='dialog']", visible: :visible, wait: 0.5)
       click_on("Close") rescue Selenium::WebDriver::Error::StaleElementReferenceError
     end
   end

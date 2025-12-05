@@ -93,6 +93,8 @@ export default class extends Controller {
       const newPing = frame.querySelector("a.direct__new, a.direct.direct__new")
       // Find all direct message links
       const directs = frame.querySelectorAll("a.direct:not(.direct__new)")
+      // Find all direct message placeholder buttons (users without existing DMs)
+      const directPlaceholders = frame.querySelectorAll("button.direct")
       // Find all room links
       const rooms = frame.querySelectorAll("a.room:not(.rooms__new-btn)")
       // Find new room link
@@ -100,7 +102,7 @@ export default class extends Controller {
       // Find settings links
       const settings = frame.querySelectorAll(".sidebar__tools a")
 
-      if (directs.length === 0 && rooms.length === 0) {
+      if (directs.length === 0 && rooms.length === 0 && directPlaceholders.length === 0) {
         // Not loaded yet, try again
         setTimeout(checkLoaded, 100)
         return
@@ -121,6 +123,12 @@ export default class extends Controller {
       // Add direct messages
       directs.forEach(link => {
         const item = this.createDirectItem(link)
+        if (item) dmSection.appendChild(item)
+      })
+
+      // Add direct message placeholders (users without existing DMs)
+      directPlaceholders.forEach(button => {
+        const item = this.createDirectPlaceholderItem(button)
         if (item) dmSection.appendChild(item)
       })
 

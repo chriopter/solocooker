@@ -10,4 +10,4 @@ fi
 bin/rubocop
 bin/brakeman -q --skip-files fizzy/
 bin/rails test
-bin/rails test:system
+ACTION_CABLE_ADAPTER=async bin/rails test:system

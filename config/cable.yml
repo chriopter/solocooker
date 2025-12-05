@@ -6,7 +6,7 @@ development:
   adapter: async
 
 test:
-  adapter: async
+  adapter: <%= ENV.fetch("ACTION_CABLE_ADAPTER", "test") %>
 
 performance:
   <<: *default
