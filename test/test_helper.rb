@@ -20,7 +20,7 @@ class ActiveSupport::TestCase
   include SessionTestHelper, MentionTestHelper, TurboTestHelper
 
   setup do
-    ActionCable.server.pubsub.clear
+    ActionCable.server.pubsub.clear if ActionCable.server.pubsub.respond_to?(:clear)
 
     Rails.configuration.tap do |config|
       config.x.web_push_pool.shutdown

@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
+# Start Redis if not running
+if ! redis-cli ping > /dev/null 2>&1; then
+  echo "Starting Redis..."
+  redis-server --daemonize yes
+fi
+
 bin/rubocop
 bin/brakeman -q --skip-files fizzy/
 bin/rails test
