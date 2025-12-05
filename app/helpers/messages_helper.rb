@@ -31,7 +31,6 @@ module MessagesHelper
     css_classes << "message--todo" if message.todo_state.present?
     css_classes << "message--todo-checked" if message.todo_state == 1
     css_classes << "message--has-thread" if message.thread?
-    css_classes << "message--has-unread-replies" if message.has_unread_replies?
     css_classes << "message--in-thread" if message.parent_id.present?
 
     tag.div id: dom_id(message),

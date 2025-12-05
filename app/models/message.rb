@@ -68,13 +68,6 @@ class Message < ApplicationRecord
     children.count
   end
 
-  # Has unread replies if: user owns this message AND there are children newer than parent
-  def has_unread_replies?(user = Current.user)
-    return false unless thread? && user
-    return false unless creator_id == user.id
-    children.where("created_at > ?", updated_at).exists?
-  end
-
   def thread_parent
     is_root? ? self : root
   end

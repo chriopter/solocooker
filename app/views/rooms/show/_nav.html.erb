@@ -1,5 +1,5 @@
 <% content_for :nav do %>
-  <%= account_logo_tag if Current.account.logo.attached? %>
+  <%= account_logo_tag if Current.account&.logo&.attached? %>
 
   <% if local_assigns[:thread_parent] && thread_parent %>
     <%# Thread navigation - show back link to room %>

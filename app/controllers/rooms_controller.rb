@@ -8,8 +8,8 @@ class RoomsController < ApplicationController
   end
 
   def show
-    if params[:thread].present?
-      @thread_parent = @room.messages.find_by(id: params[:thread])
+    if params[:thread_id].present?
+      @thread_parent = @room.messages.find_by(id: params[:thread_id])
       if @thread_parent
         @messages = @thread_parent.children.with_creator.with_attachment_details.with_boosts.ordered
       else

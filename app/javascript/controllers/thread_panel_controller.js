@@ -35,7 +35,7 @@ export default class extends Controller {
 
     // Navigate to thread view
     event.preventDefault()
-    const url = `/rooms/${roomMeta.content}?thread=${messageId}`
+    const url = `/rooms/${roomMeta.content}/${messageId}`
     Turbo.visit(url, { action: "replace" })
   }
 

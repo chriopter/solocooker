@@ -13,6 +13,54 @@
 .thread-view__parent {
   border-bottom: 1px solid var(--color-border);
   background-color: oklch(var(--lch-black) / 3%);
+  padding-block: 1em;
+}
+
+.thread-view__parent .message {
+  visibility: visible !important;
+}
+
+/* Center the parent message - override the --me alignment */
+.thread-view__parent .message.message--me .message__body {
+  justify-self: center;
+}
+
+.thread-view__parent .message:not(.message--me) .message__body {
+  justify-self: center;
+}
+
+.thread-view__parent .message__day-separator {
+  display: none !important;
+}
+
+/* Hide avatar in thread parent - cleaner centered look */
+.thread-view__parent .message__avatar {
+  display: none;
+}
+
+/* Limit parent message height - collapsible */
+.thread-view__parent .message__body-content {
+  max-height: 6em; /* ~4 lines */
+  overflow: hidden;
+  position: relative;
+}
+
+.thread-view__parent .message__body-content.expanded {
+  max-height: none;
+}
+
+/* "Read more" link */
+.thread-view__parent .thread-view__read-more {
+  display: block;
+  text-align: center;
+  padding: 0.25em;
+  font-size: 0.75em;
+  color: var(--color-text-muted);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-text);
+  }
 }
 
 /* Thread nav in header */
@@ -60,13 +108,11 @@
 }
 
 /* Messages in thread view - ensure visible */
-.thread-view__parent .message,
 .thread-view__messages .message {
   visibility: visible;
 }
 
 /* Hide day separator in thread view - not needed */
-.thread-view__parent .message__day-separator,
 .thread-view__messages .message__day-separator {
   display: none !important;
 }
@@ -128,12 +174,12 @@
   }
 }
 
-/* Golden highlight for unread replies - Fizzy effect */
-.message--has-unread-replies .message__thread-indicator {
+/* Golden highlight for messages with threads - Fizzy effect */
+.message--has-thread .message__thread-indicator {
   background: linear-gradient(135deg, var(--color-golden), color-mix(in oklch, var(--color-golden) 80%, black));
 }
 
-.message--has-unread-replies .message__body-content {
+.message--has-thread .message__body-content {
   background-color: color-mix(in srgb, var(--color-golden) 4%, var(--color-message-bg));
   background-image: linear-gradient(60deg,
     color-mix(in srgb, var(--color-golden) 45%, transparent) 0%,
