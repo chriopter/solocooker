@@ -37,7 +37,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
     user = User.last
     assert_equal user.id, Session.find_by(token: parsed_cookies.signed[:session_token]).user.id
-    assert_equal Rooms::Open.all, user.rooms
+    assert_equal Rooms::Open.count + 1, user.rooms.count # open rooms + self-ping
   end
 
   test "creating a new user with an existing email address will redirect to login screen" do

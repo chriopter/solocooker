@@ -19,7 +19,7 @@ class User < ApplicationRecord
 
   has_secure_password validations: false
 
-  after_create_commit :grant_membership_to_open_rooms
+  after_create_commit :grant_membership_to_open_rooms, :create_self_ping
 
   scope :ordered, -> { order("LOWER(name)") }
   scope :filtered_by, ->(query) { where("name like ?", "%#{query}%") }
@@ -52,6 +52,12 @@ class User < ApplicationRecord
   private
     def grant_membership_to_open_rooms
       Membership.insert_all(Rooms::Open.pluck(:id).collect { |room_id| { room_id: room_id, user_id: id } })
+    end
+
+    def create_self_ping
+      Current.set(user: self) do
+        Rooms::Direct.find_or_create_for(User.where(id: id))
+      end
     end
 
     def deactived_email_address

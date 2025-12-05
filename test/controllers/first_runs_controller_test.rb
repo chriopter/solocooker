@@ -20,7 +20,7 @@ class FirstRunsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create" do
-    assert_difference -> { Room.count }, 1 do
+    assert_difference -> { Room.count }, 2 do # open room + self-ping
       assert_difference -> { User.count }, 1 do
         post first_run_url, params: { account: { name: "37signals" }, user: { name: "New Person", email_address: "new@37signals.com", password: "secret123456" } }
       end

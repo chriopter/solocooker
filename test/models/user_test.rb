@@ -7,7 +7,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "creating users grants membership to the open rooms" do
-    assert_difference -> { Membership.count }, +Rooms::Open.count do
+    assert_difference -> { Membership.count }, +Rooms::Open.count + 1 do # open rooms + self-ping
       create_new_user
     end
   end
