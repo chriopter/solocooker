@@ -6,7 +6,7 @@ A fork of [Campfire](https://github.com/basecamp/campfire) by [37signals](https:
 
 
 Next: Fix gold effect on new message / unread thread logic, Hot updates working on that, recycle button behaviour childs
-drag n drop in another room possibility, left sidebar sticky area, rethink golden state / pinned, all things with child like on top? , stuff with shit is golden, adds filter, recycle behaviour 
+drag n drop in another room possibility, left sidebar sticky area, rethink golden state / pinned, all things with child like on top? , stuff with shit is golden, adds filter, recycle behaviour, adjust recycle button parent child behaviour
 
 ## Development
 
