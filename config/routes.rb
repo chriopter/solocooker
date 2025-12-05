@@ -70,6 +70,7 @@ Rails.application.routes.draw do
         patch :toggle_todo
         patch :add_to_thread
         patch :remove_from_thread
+        patch :move_to_room
       end
     end
 
