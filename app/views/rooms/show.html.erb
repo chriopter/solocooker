@@ -18,7 +18,7 @@
   <%= messages_tag(@room) do %>
     <% if @thread_parent %>
       <%# Show thread parent at top with back link styling %>
-      <div class="thread-view__parent" data-action="click->thread-nav#backToRoom">
+      <div class="thread-view__parent" data-controller="expandable">
         <%= render partial: "messages/message", locals: { message: @thread_parent } %>
       </div>
       <div class="thread-view__separator">

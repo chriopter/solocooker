@@ -14,6 +14,8 @@
   border-bottom: 1px solid var(--color-border);
   background-color: oklch(var(--lch-black) / 3%);
   padding-block: 1em;
+  position: relative;
+  padding-bottom: 1.5em;
 }
 
 .thread-view__parent .message {
@@ -40,27 +42,37 @@
 
 /* Limit parent message height - collapsible */
 .thread-view__parent .message__body-content {
-  max-height: 6em; /* ~4 lines */
+  max-height: 8em;
   overflow: hidden;
   position: relative;
+  padding-bottom: 1.5em;
 }
 
 .thread-view__parent .message__body-content.expanded {
   max-height: none;
+  padding-bottom: 0;
 }
 
-/* "Read more" link */
-.thread-view__parent .thread-view__read-more {
-  display: block;
-  text-align: center;
-  padding: 0.25em;
-  font-size: 0.75em;
+/* Read more link - positioned at bottom */
+.thread-view__read-more {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(to right, transparent, color-mix(in srgb, var(--color-golden) 4%, var(--color-message-bg)) 30%);
+  padding-left: 2em;
   color: var(--color-text-muted);
   cursor: pointer;
+  font-size: 0.85em;
+}
 
-  &:hover {
-    color: var(--color-text);
-  }
+.thread-view__read-more:hover {
+  text-decoration: underline;
+}
+
+.thread-view__parent .message__body-content.expanded .thread-view__read-more {
+  position: static;
+  background: none;
+  padding-left: 0.5em;
 }
 
 /* Thread nav in header */

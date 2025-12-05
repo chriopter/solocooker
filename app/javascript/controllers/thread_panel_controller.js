@@ -19,8 +19,8 @@ export default class extends Controller {
     const messageEl = event.target.closest(".message")
     if (!messageEl) return
 
-    // Don't trigger if clicking on links or buttons inside message
-    if (event.target.closest("a, button, input, textarea")) return
+    // Don't trigger if clicking on interactive elements inside message
+    if (event.target.closest("a, button, input, textarea, details, dialog, .message__options-btn, .message__actions-menu")) return
 
     // Check if this message has children (thread indicator)
     const hasThread = messageEl.querySelector(".message__thread-indicator")
