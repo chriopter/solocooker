@@ -43,11 +43,11 @@ module SystemTestHelper
   end
 
   def assert_room_read(room)
-    assert_selector ".rooms a.room:not(.unread)", text: room.name, wait: 5
+    assert_selector ".rooms a.room:not(.unread):not(.rooms__new-btn)", text: room.name, wait: 5
   end
 
   def assert_room_unread(room)
-    assert_selector ".rooms a.room.unread", text: room.name, wait: 5
+    assert_selector ".rooms a.room.unread:not(.rooms__new-btn)", text: room.name, wait: 5
   end
 
   def reveal_message_actions
