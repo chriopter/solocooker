@@ -59,6 +59,13 @@ Rails.application.routes.draw do
     route_for :user_avatar, user.avatar_token, v: user.updated_at.to_fs(:number)
   end
 
+  # These must come before `resources :rooms` to avoid route conflicts with thread_id
+  namespace :rooms do
+    resources :opens
+    resources :closeds
+    resources :directs
+  end
+
   resources :rooms do
     member do
       delete :delete_completed_todos
@@ -86,12 +93,6 @@ Rails.application.routes.draw do
 
     # Thread view: /rooms/12/818 shows thread with parent message 818
     get ":thread_id", to: "rooms#show", as: :thread, constraints: { thread_id: /\d+/ }
-  end
-
-  namespace :rooms do
-    resources :opens
-    resources :closeds
-    resources :directs
   end
 
   resources :messages do

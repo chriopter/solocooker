@@ -33,10 +33,10 @@ export default class extends Controller {
     const roomMeta = document.querySelector("meta[name='current-room-id']")
     if (!roomMeta) return
 
-    // Navigate to thread view
+    // Navigate to thread view (use "advance" to enable browser back button)
     event.preventDefault()
     const url = `/rooms/${roomMeta.content}/${messageId}`
-    Turbo.visit(url, { action: "replace" })
+    Turbo.visit(url)
   }
 
   setupRoomNameDropTarget() {
