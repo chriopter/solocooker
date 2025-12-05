@@ -18,10 +18,12 @@ module SystemTestHelper
 
   def join_room(room, retries: 3)
     visit room_url(room)
+    assert_selector ".room-menu__trigger", wait: 5
     wait_for_cable_connection
     dismiss_pwa_install_prompt
   rescue Selenium::WebDriver::Error::StaleElementReferenceError
     retries -= 1
+    sleep 0.5
     retry if retries > 0
     raise
   end
@@ -40,11 +42,11 @@ module SystemTestHelper
   end
 
   def assert_room_read(room)
-    assert_selector ".rooms a", class: "!unread", text: "#{room.name}", wait: 5
+    assert_selector ".rooms a.room:not(.unread)", text: room.name, wait: 5
   end
 
   def assert_room_unread(room)
-    assert_selector ".rooms a", class: "unread", text: "#{room.name}", wait: 5
+    assert_selector ".rooms a.room.unread", text: room.name, wait: 5
   end
 
   def reveal_message_actions

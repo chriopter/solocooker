@@ -1,3 +1,7 @@
-rubocop -A
-rails test
-bin/rails db:setup test:system
+#!/usr/bin/env bash
+set -e
+
+bin/rubocop
+bin/brakeman -q
+bin/rails test
+bin/rails test:system
