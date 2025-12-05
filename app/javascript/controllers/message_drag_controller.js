@@ -1,6 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
+  static globalDropHandlerInstalled = false
+
   connect() {
     this.element.setAttribute("draggable", "true")
     this.boundDragStart = this.dragStart.bind(this)
@@ -18,6 +20,9 @@ export default class extends Controller {
     this.element.addEventListener("dragenter", this.boundDragEnter)
     this.element.addEventListener("dragleave", this.boundDragLeave)
     this.element.addEventListener("drop", this.boundDrop)
+
+    // Install global drop handler once to catch accidental drops on invalid areas
+    this.installGlobalDropHandler()
   }
 
   disconnect() {
@@ -27,6 +32,32 @@ export default class extends Controller {
     this.element.removeEventListener("dragenter", this.boundDragEnter)
     this.element.removeEventListener("dragleave", this.boundDragLeave)
     this.element.removeEventListener("drop", this.boundDrop)
+  }
+
+  installGlobalDropHandler() {
+    if (this.constructor.globalDropHandlerInstalled) return
+    this.constructor.globalDropHandlerInstalled = true
+
+    // Prevent default browser behavior for message drops anywhere on the document
+    // This catches drops on invalid targets (canvas, sidebar areas, etc.) and prevents breakage
+    document.addEventListener("dragover", (event) => {
+      if (!event.dataTransfer.types.includes("application/x-message-id")) return
+      // Allow valid drop targets to handle their own dragover
+      // Only prevent default at document level for message drags to avoid browser's default behavior
+      if (!event.defaultPrevented) {
+        event.preventDefault()
+        event.dataTransfer.dropEffect = "none"
+      }
+    })
+
+    document.addEventListener("drop", (event) => {
+      if (!event.dataTransfer.types.includes("application/x-message-id")) return
+      // If the drop event bubbles up to document (wasn't handled by a valid target),
+      // prevent default to avoid any browser behavior
+      if (!event.defaultPrevented) {
+        event.preventDefault()
+      }
+    })
   }
 
   dragStart(event) {

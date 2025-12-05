@@ -95,11 +95,11 @@ class MessagesController < ApplicationController
   def move_to_room
     target_room = Current.user.rooms.find(params[:target_room_id])
 
-    # Remove from thread if in one
+    # Remove from thread if in one (but keep own children)
     @message.update!(parent: nil) if @message.parent
 
-    # Move children too (they become root level in new room)
-    @message.children.update_all(room_id: target_room.id, ancestry: nil)
+    # Move children too, preserving their relationship to this message
+    @message.children.update_all(room_id: target_room.id)
 
     # Move the message itself
     @message.update!(room_id: target_room.id)

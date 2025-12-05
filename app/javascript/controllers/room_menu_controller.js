@@ -192,9 +192,17 @@ export default class extends Controller {
     const href = originalLink.getAttribute("href")
     if (!href) return null
 
+    // Extract room ID from href (e.g., /rooms/12 -> 12) or from data attribute
+    const roomIdMatch = href.match(/\/rooms\/(\d+)/)
+    const roomId = roomIdMatch ? roomIdMatch[1] : originalLink.dataset.roomId
+
     const item = document.createElement("a")
     item.href = href
     item.className = "room-menu__item"
+    if (roomId) {
+      item.dataset.roomId = roomId
+      this.setupRoomDropTarget(item, roomId)
+    }
 
     // Get avatar image
     const avatar = originalLink.querySelector("img")
