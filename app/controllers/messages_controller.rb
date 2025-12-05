@@ -69,6 +69,10 @@ class MessagesController < ApplicationController
 
     # Only allow one level deep - attach to root if parent has ancestry
     @actual_parent = parent_message.is_root? ? parent_message : parent_message.root
+
+    # If message has children, move them to the same parent (keep max 2 levels)
+    @message.children.update_all(ancestry: @actual_parent.id.to_s) if @message.has_children?
+
     @message.update!(parent: @actual_parent)
 
     respond_to do |format|
