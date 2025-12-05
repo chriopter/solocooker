@@ -2,7 +2,7 @@ class MessagesController < ApplicationController
   include ActiveStorage::SetCurrent, RoomScoped
 
   before_action :set_room, except: :create
-  before_action :set_message, only: %i[ show edit update destroy toggle_todo add_to_thread remove_from_thread ]
+  before_action :set_message, only: %i[ show edit update destroy toggle_todo add_to_thread remove_from_thread move_to_room ]
   before_action :ensure_can_administer, only: %i[ edit update destroy ]
 
   layout false, only: :index
@@ -89,6 +89,30 @@ class MessagesController < ApplicationController
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_back(fallback_location: room_path(@room)) }
+    end
+  end
+
+  def move_to_room
+    target_room = Current.user.rooms.find(params[:target_room_id])
+
+    # Remove from thread if in one
+    @message.update!(parent: nil) if @message.parent
+
+    # Move children too (they become root level in new room)
+    @message.children.update_all(room_id: target_room.id, ancestry: nil)
+
+    # Move the message itself
+    @message.update!(room_id: target_room.id)
+
+    # Broadcast removal from current room
+    @message.broadcast_remove_to @room, :messages
+
+    # Broadcast addition to new room
+    @message.broadcast_create
+
+    respond_to do |format|
+      format.json { render json: { success: true, redirect_url: room_path(target_room) } }
+      format.html { redirect_to room_path(target_room) }
     end
   end
 

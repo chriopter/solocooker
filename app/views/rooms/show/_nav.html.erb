@@ -2,14 +2,26 @@
   <%= account_logo_tag if Current.account&.logo&.attached? %>
 
   <% if local_assigns[:thread_parent] && thread_parent %>
-    <%# Thread navigation - show back link to room %>
+    <%# Thread navigation - show back link with room menu for drag-drop %>
     <div class="thread-nav" data-controller="thread-nav">
-      <%= link_to room_path(room), class: "btn btn--reversed room--current thread-nav__back", data: { turbo_action: "replace" } do %>
+      <%= link_to room_path(room), class: "btn btn--reversed thread-nav__back-arrow", data: { turbo_action: "replace" } do %>
         <span class="thread-nav__arrow">←</span>
-        <h1 class="room__contents txt-medium overflow-ellipsis">
-          <%= room_display_name(room) %>
-        </h1>
       <% end %>
+      <div class="room-menu" data-controller="room-menu" data-action="keydown.esc->room-menu#close click@document->room-menu#closeOnClickOutside">
+        <%= tag.button class: "btn btn--reversed room--current room-menu__trigger", data: { action: "click->room-menu#toggle" } do %>
+          <h1 class="room__contents txt-medium overflow-ellipsis">
+            <%= room_display_name(room) %>
+          </h1>
+          <span class="room-menu__chevron">▼</span>
+        <% end %>
+
+        <%= tag.dialog class: "room-menu__popup", data: { room_menu_target: "dialog" } do %>
+          <div class="room-menu__list" data-room-menu-target="list"></div>
+          <div class="room-menu__source" hidden>
+            <%= sidebar_turbo_frame_tag(src: user_sidebar_path) %>
+          </div>
+        <% end %>
+      </div>
     </div>
   <% else %>
     <%# Normal room navigation %>

@@ -79,12 +79,19 @@
 .thread-nav {
   display: flex;
   align-items: center;
+  gap: 0.25em;
 }
 
 .thread-nav__back {
   display: flex;
   align-items: center;
   gap: 0.5em;
+}
+
+.thread-nav__back-arrow {
+  display: flex;
+  align-items: center;
+  padding: 0.25em;
 }
 
 .thread-nav__arrow {

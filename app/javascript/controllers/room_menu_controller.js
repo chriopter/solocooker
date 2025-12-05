@@ -5,10 +5,56 @@ export default class extends Controller {
 
   connect() {
     this.dialogTarget.setAttribute("aria-hidden", "true")
+    this.setupDragListeners()
+  }
+
+  disconnect() {
+    this.cleanupDragListeners()
+  }
+
+  setupDragListeners() {
+    // Listen for drag events on document to auto-open menu
+    this.boundDocDragOver = this.handleDocDragOver.bind(this)
+    this.boundDocDragEnd = this.handleDocDragEnd.bind(this)
+    document.addEventListener("dragover", this.boundDocDragOver)
+    document.addEventListener("dragend", this.boundDocDragEnd)
+    document.addEventListener("drop", this.boundDocDragEnd)
+  }
+
+  cleanupDragListeners() {
+    document.removeEventListener("dragover", this.boundDocDragOver)
+    document.removeEventListener("dragend", this.boundDocDragEnd)
+    document.removeEventListener("drop", this.boundDocDragEnd)
+  }
+
+  handleDocDragOver(event) {
+    // Only handle message drags
+    if (!event.dataTransfer.types.includes("application/x-message-id")) return
+
+    // Check if hovering over the menu trigger
+    const trigger = this.element.querySelector(".room-menu__trigger")
+    if (trigger && trigger.contains(event.target)) {
+      if (!this.dialogTarget.open) {
+        this.open(event)
+      }
+    }
+  }
+
+  handleDocDragEnd() {
+    // Close menu if open during drag
+    if (this.openedByDrag) {
+      this.close()
+      this.openedByDrag = false
+    }
   }
 
   open(event) {
     if (event && event.target.matches("input, textarea, [contenteditable]")) return
+
+    // Track if opened by drag for auto-close
+    if (event && event.type === "dragover") {
+      this.openedByDrag = true
+    }
 
     this.dialogTarget.show()
     this.dialogTarget.setAttribute("aria-hidden", "false")
@@ -182,9 +228,17 @@ export default class extends Controller {
     const href = originalLink.getAttribute("href")
     if (!href) return null
 
+    // Extract room ID from href (e.g., /rooms/12 -> 12)
+    const roomIdMatch = href.match(/\/rooms\/(\d+)/)
+    const roomId = roomIdMatch ? roomIdMatch[1] : null
+
     const item = document.createElement("a")
     item.href = href
     item.className = "room-menu__item"
+    if (roomId) {
+      item.dataset.roomId = roomId
+      this.setupRoomDropTarget(item, roomId)
+    }
 
     // Get room name (may include emoji)
     const roomName = originalLink.querySelector(".overflow-ellipsis")
@@ -205,6 +259,59 @@ export default class extends Controller {
     }
 
     return item
+  }
+
+  setupRoomDropTarget(item, targetRoomId) {
+    item.addEventListener("dragover", (e) => {
+      if (!e.dataTransfer.types.includes("application/x-message-id")) return
+      e.preventDefault()
+      e.dataTransfer.dropEffect = "move"
+      item.classList.add("room-menu__item--drop-target")
+    })
+
+    item.addEventListener("dragleave", () => {
+      item.classList.remove("room-menu__item--drop-target")
+    })
+
+    item.addEventListener("drop", async (e) => {
+      item.classList.remove("room-menu__item--drop-target")
+      const messageId = e.dataTransfer.getData("application/x-message-id")
+      if (!messageId) return
+      e.preventDefault()
+      e.stopPropagation()
+
+      // Get current room ID
+      const roomMeta = document.querySelector("meta[name='current-room-id']")
+      if (!roomMeta) return
+      const currentRoomId = roomMeta.content
+
+      // Don't move to same room
+      if (currentRoomId === targetRoomId) return
+
+      try {
+        const response = await fetch(`/rooms/${currentRoomId}/messages/${messageId}/move_to_room`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
+          },
+          body: JSON.stringify({ target_room_id: targetRoomId })
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          if (data.redirect_url) {
+            Turbo.visit(data.redirect_url, { action: "replace" })
+          }
+        }
+      } catch (error) {
+        console.error("Failed to move message:", error)
+      }
+
+      this.close()
+      this.openedByDrag = false
+    })
   }
 
   createSettingsItem(originalLink) {
