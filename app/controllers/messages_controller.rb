@@ -23,8 +23,13 @@ class MessagesController < ApplicationController
 
     # If parent_id is provided, set the parent for threading
     if params[:parent_id].present?
-      parent = @room.messages.find_by(id: params[:parent_id])
-      @message.update!(parent: parent) if parent
+      @parent = @room.messages.find_by(id: params[:parent_id])
+      if @parent
+        @message.update!(parent: @parent)
+        # Update parent's thread indicator for other users
+        @parent.touch
+        @parent.broadcast_replace_to @room, :messages, partial: "messages/message", locals: { message: @parent }
+      end
     end
 
     @message.broadcast_create

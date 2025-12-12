@@ -1,1 +1,7 @@
 <%= turbo_stream.append dom_id(@message.room, :messages), @message %>
+
+<% if @parent %>
+  <%= turbo_stream.replace @parent do %>
+    <%= render partial: "messages/message", locals: { message: @parent } %>
+  <% end %>
+<% end %>
