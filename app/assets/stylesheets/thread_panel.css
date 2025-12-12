@@ -151,7 +151,8 @@
 
 /* Visual feedback when hovering over a message as drop target */
 .message--drop-target .message__body-content {
-  box-shadow: 0 0 0 2px color-mix(in oklch, var(--color-golden) 80%, transparent);
+  outline: 3px solid oklch(65% 0.2 250);
+  outline-offset: 2px;
 }
 
 /* Visual feedback when hovering over messages area to remove from thread */
