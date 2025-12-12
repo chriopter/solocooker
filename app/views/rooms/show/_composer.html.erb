@@ -6,10 +6,11 @@
       <span class="for-screen-reader">Search</span>
     <% end %>
     
-    <button type="button" 
+    <button type="button"
             class="btn flex-item-no-shrink margin-block-end composer__context-btn"
             data-controller="recycle"
             data-recycle-room-id="<%= room.id %>"
+            <% if local_assigns[:thread_parent] && thread_parent %>data-recycle-parent-id="<%= thread_parent.id %>"<% end %>
             data-action="click->recycle#handleClick mousedown->recycle#handleMouseDown mouseup->recycle#handleMouseUp mouseleave->recycle#handleMouseLeave touchstart->recycle#handleTouchStart touchend->recycle#handleTouchEnd touchcancel->recycle#cancelHold">
       <span>♻️</span>
       <span class="for-screen-reader">Hold to recycle</span>

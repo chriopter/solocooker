@@ -116,7 +116,11 @@ export default class extends Controller {
   
   async delete(endpoint) {
     const roomId = this.data.get("room-id")
-    const response = await fetch(`/rooms/${roomId}${endpoint}`, {
+    const parentId = this.data.get("parent-id")
+    const url = new URL(`/rooms/${roomId}${endpoint}`, window.location.origin)
+    if (parentId) url.searchParams.set("parent_id", parentId)
+
+    const response = await fetch(url, {
       method: "DELETE",
       headers: {
         "X-CSRF-Token": document.querySelector("[name='csrf-token']").content,

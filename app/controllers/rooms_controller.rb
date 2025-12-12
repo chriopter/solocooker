@@ -29,8 +29,15 @@ class RoomsController < ApplicationController
   end
 
   def delete_completed_todos
+    # Scope to thread children if parent_id provided, otherwise root messages only
+    base_scope = if params[:parent_id].present?
+      @room.messages.where(ancestry: params[:parent_id])
+    else
+      @room.messages.roots_only
+    end
+
     # Delete only completed todos
-    completed_todos = @room.messages.where(todo_state: 1)
+    completed_todos = base_scope.where(todo_state: 1)
 
     # Filter to only messages the user can administer
     @deleted_messages = completed_todos.select { |message| Current.user.can_administer?(message) }
@@ -68,8 +75,15 @@ class RoomsController < ApplicationController
   end
 
   def delete_non_todos
+    # Scope to thread children if parent_id provided, otherwise root messages only
+    base_scope = if params[:parent_id].present?
+      @room.messages.where(ancestry: params[:parent_id])
+    else
+      @room.messages.roots_only
+    end
+
     # Delete only non-todo messages (todo_state IS NULL)
-    non_todos = @room.messages.where(todo_state: nil)
+    non_todos = base_scope.where(todo_state: nil)
 
     # Filter to only messages the user can administer
     @deleted_messages = non_todos.select { |message| Current.user.can_administer?(message) }
