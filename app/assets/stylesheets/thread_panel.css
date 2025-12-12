@@ -150,7 +150,7 @@
 }
 
 /* Visual feedback when hovering over a message as drop target */
-.message--drop-target .message__body-content {
+.message__body-content--drop-target {
   outline: 3px solid oklch(65% 0.2 250);
   outline-offset: 2px;
 }

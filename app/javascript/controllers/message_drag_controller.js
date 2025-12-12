@@ -15,11 +15,14 @@ export default class extends Controller {
     this.element.addEventListener("dragstart", this.boundDragStart)
     this.element.addEventListener("dragend", this.boundDragEnd)
 
-    // Make messages drop targets too (for dropping onto another message)
-    this.element.addEventListener("dragover", this.boundDragOver)
-    this.element.addEventListener("dragenter", this.boundDragEnter)
-    this.element.addEventListener("dragleave", this.boundDragLeave)
-    this.element.addEventListener("drop", this.boundDrop)
+    // Make message body content the drop target (not the whole row)
+    this.dropTarget = this.element.querySelector(".message__body-content")
+    if (this.dropTarget) {
+      this.dropTarget.addEventListener("dragover", this.boundDragOver)
+      this.dropTarget.addEventListener("dragenter", this.boundDragEnter)
+      this.dropTarget.addEventListener("dragleave", this.boundDragLeave)
+      this.dropTarget.addEventListener("drop", this.boundDrop)
+    }
 
     // Install global drop handler once to catch accidental drops on invalid areas
     this.installGlobalDropHandler()
@@ -28,10 +31,12 @@ export default class extends Controller {
   disconnect() {
     this.element.removeEventListener("dragstart", this.boundDragStart)
     this.element.removeEventListener("dragend", this.boundDragEnd)
-    this.element.removeEventListener("dragover", this.boundDragOver)
-    this.element.removeEventListener("dragenter", this.boundDragEnter)
-    this.element.removeEventListener("dragleave", this.boundDragLeave)
-    this.element.removeEventListener("drop", this.boundDrop)
+    if (this.dropTarget) {
+      this.dropTarget.removeEventListener("dragover", this.boundDragOver)
+      this.dropTarget.removeEventListener("dragenter", this.boundDragEnter)
+      this.dropTarget.removeEventListener("dragleave", this.boundDragLeave)
+      this.dropTarget.removeEventListener("drop", this.boundDrop)
+    }
   }
 
   installGlobalDropHandler() {
@@ -107,13 +112,13 @@ export default class extends Controller {
 
     event.preventDefault()
     event.stopPropagation()
-    this.element.classList.add("message--drop-target")
+    this.dropTarget.classList.add("message__body-content--drop-target")
   }
 
   dragLeave(event) {
-    // Only remove class if we're leaving the message entirely
-    if (!this.element.contains(event.relatedTarget)) {
-      this.element.classList.remove("message--drop-target")
+    // Only remove class if we're leaving the drop target entirely
+    if (!this.dropTarget.contains(event.relatedTarget)) {
+      this.dropTarget.classList.remove("message__body-content--drop-target")
     }
   }
 
@@ -124,7 +129,7 @@ export default class extends Controller {
 
     event.preventDefault()
     event.stopPropagation()
-    this.element.classList.remove("message--drop-target")
+    this.dropTarget.classList.remove("message__body-content--drop-target")
 
     const targetMessageId = this.element.dataset.messageId
 
