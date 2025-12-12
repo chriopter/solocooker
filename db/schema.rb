@@ -168,6 +168,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_05_120000) do
     t.index ["user_id"], name: "index_webhooks_on_user_id"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "bans", "users"
   add_foreign_key "boosts", "messages"

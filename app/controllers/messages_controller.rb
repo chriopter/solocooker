@@ -47,10 +47,10 @@ class MessagesController < ApplicationController
   end
 
   def destroy
-    parent = @message.parent
+    parent_id = @message.parent_id
     @message.destroy
     @message.broadcast_remove
-    if parent
+    if parent_id && (parent = Message.find_by(id: parent_id))
       parent.touch # Invalidate cache so reply_count updates
       parent.broadcast_replace_to @room, :messages, partial: "messages/message", locals: { message: parent }
     end
