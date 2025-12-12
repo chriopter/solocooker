@@ -64,6 +64,9 @@ class MessagesController < ApplicationController
   def toggle_todo
     @message.toggle_todo!
 
+    # Broadcast update to other clients
+    @message.broadcast_replace_to @room, :messages, partial: "messages/message", locals: { message: @message }
+
     respond_to do |format|
       format.turbo_stream { head :ok }
       format.html { redirect_back(fallback_location: room_path(@room)) }
