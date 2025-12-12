@@ -3,7 +3,7 @@ default: &default
   url: redis://localhost:6379
 
 development:
-  adapter: async
+  <<: *default
 
 test:
   adapter: <%= ENV.fetch("ACTION_CABLE_ADAPTER", "test") %>

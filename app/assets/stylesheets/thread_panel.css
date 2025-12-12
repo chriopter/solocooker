@@ -43,7 +43,8 @@
 /* Limit parent message height - collapsible */
 .thread-view__parent .message__body-content {
   max-height: 8em;
-  overflow: hidden;
+  overflow: clip;
+  overflow-clip-margin: 1em; /* Allow thread indicator to show outside */
   position: relative;
   padding-bottom: 1.5em;
 }
