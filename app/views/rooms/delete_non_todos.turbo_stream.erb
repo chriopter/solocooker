@@ -1,0 +1,9 @@
+<% @deleted_messages.each do |message| %>
+  <%= turbo_stream.remove message %>
+<% end %>
+
+<% @affected_parents.each do |parent| %>
+  <%= turbo_stream.replace parent do %>
+    <%= render partial: "messages/message", locals: { message: parent } %>
+  <% end %>
+<% end %>

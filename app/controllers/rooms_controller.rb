@@ -33,17 +33,27 @@ class RoomsController < ApplicationController
     completed_todos = @room.messages.where(todo_state: 1)
 
     # Filter to only messages the user can administer
-    deletable_messages = completed_todos.select { |message| Current.user.can_administer?(message) }
+    @deleted_messages = completed_todos.select { |message| Current.user.can_administer?(message) }
 
-    if deletable_messages.any?
+    if @deleted_messages.any?
+      # Track parent IDs before deleting
+      parent_ids = @deleted_messages.map(&:parent_id).compact.uniq
+
       # Delete and broadcast removal for each message
-      deletable_messages.each do |message|
+      @deleted_messages.each do |message|
         message.destroy
         message.broadcast_remove_to @room, :messages
       end
 
+      # Find and touch affected parents
+      @affected_parents = Message.where(id: parent_ids)
+      @affected_parents.each do |parent|
+        parent.touch
+        parent.broadcast_replace_to @room, :messages, partial: "messages/message", locals: { message: parent }
+      end
+
       respond_to do |format|
-        format.turbo_stream { head :ok }
+        format.turbo_stream
         format.html { redirect_back(fallback_location: room_path(@room)) }
       end
     else
@@ -62,16 +72,26 @@ class RoomsController < ApplicationController
     non_todos = @room.messages.where(todo_state: nil)
 
     # Filter to only messages the user can administer
-    deletable_messages = non_todos.select { |message| Current.user.can_administer?(message) }
+    @deleted_messages = non_todos.select { |message| Current.user.can_administer?(message) }
 
-    if deletable_messages.any?
-      deletable_messages.each do |message|
+    if @deleted_messages.any?
+      # Track parent IDs before deleting
+      parent_ids = @deleted_messages.map(&:parent_id).compact.uniq
+
+      @deleted_messages.each do |message|
         message.destroy
         message.broadcast_remove_to @room, :messages
       end
 
+      # Find and touch affected parents
+      @affected_parents = Message.where(id: parent_ids)
+      @affected_parents.each do |parent|
+        parent.touch
+        parent.broadcast_replace_to @room, :messages, partial: "messages/message", locals: { message: parent }
+      end
+
       respond_to do |format|
-        format.turbo_stream { head :ok }
+        format.turbo_stream
         format.html { redirect_back(fallback_location: room_path(@room)) }
       end
     else

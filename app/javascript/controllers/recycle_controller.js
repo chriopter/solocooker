@@ -116,12 +116,20 @@ export default class extends Controller {
   
   async delete(endpoint) {
     const roomId = this.data.get("room-id")
-    return fetch(`/rooms/${roomId}${endpoint}`, {
+    const response = await fetch(`/rooms/${roomId}${endpoint}`, {
       method: "DELETE",
       headers: {
         "X-CSRF-Token": document.querySelector("[name='csrf-token']").content,
         "Accept": "text/vnd.turbo-stream.html"
       }
     })
+
+    // Process turbo stream response
+    if (response.ok && response.headers.get("Content-Type")?.includes("turbo-stream")) {
+      const html = await response.text()
+      Turbo.renderStreamMessage(html)
+    }
+
+    return response
   }
 }
