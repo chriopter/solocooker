@@ -50,8 +50,10 @@ class MessagesController < ApplicationController
     parent = @message.parent
     @message.destroy
     @message.broadcast_remove
-    parent&.touch # Invalidate cache so reply_count updates
-    parent&.broadcast_replace_to @room, :messages
+    if parent
+      parent.touch # Invalidate cache so reply_count updates
+      parent.broadcast_replace_to @room, :messages, partial: "messages/message", locals: { message: parent }
+    end
   end
 
   def toggle_todo
