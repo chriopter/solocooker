@@ -47,8 +47,11 @@ class MessagesController < ApplicationController
   end
 
   def destroy
+    parent = @message.parent
     @message.destroy
     @message.broadcast_remove
+    parent&.touch # Invalidate cache so reply_count updates
+    parent&.broadcast_replace_to @room, :messages
   end
 
   def toggle_todo
